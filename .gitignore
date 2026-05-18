@@ -1,0 +1,13 @@
+node_modules/
+test-results/
+playwright-report/
+playwright/.cache/
+screenshots/
+.playwright-mcp/
+*.log
+.env
+.env.local
+.DS_Store
+Thumbs.db
+.claude/
+*.yml
