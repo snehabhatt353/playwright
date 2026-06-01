@@ -20,7 +20,7 @@ npx playwright install chromium
 
 ## Run
 
-Credentials default to a developer account inside the spec file. Override via env vars:
+Credentials are **required** via environment variables — `tests/data/testdata.json` ships with empty defaults so secrets never land in git:
 
 ```bash
 # bash
@@ -29,6 +29,8 @@ TM_USER=<username> TM_PASS=<password> npx playwright test
 # PowerShell
 $env:TM_USER="<username>"; $env:TM_PASS="<password>"; npx playwright test
 ```
+
+Optionally override the base URL with `TM_BASE_URL`. In CI, set `TM_USER` / `TM_PASS` (and optionally `TM_BASE_URL`) as repository secrets — the workflow at `.github/workflows/playwright.yml` reads them.
 
 Common variants:
 

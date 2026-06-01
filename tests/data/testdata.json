@@ -1,0 +1,253 @@
+{
+  "baseUrl": "https://tmdev.threatmodeler.us",
+  "credentials": {
+    "username": "",
+    "password": ""
+  },
+  "paths": {
+    "root": "/",
+    "login": "/idsvr/Account/Login",
+    "threatModels": "/threatmodels",
+    "threatModelsArchived": "/threatmodels/archived",
+    "threatFramework": "/threatframework"
+  },
+  "urlPatterns": {
+    "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
+    "loggedIn": "\\/threatmodels(\\?|$|\\/)",
+    "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}",
+    "threatFramework": "\\/threatframework"
+  },
+  "titles": {
+    "threatModels": "Threat Models \\| ThreatModeler",
+    "threatModelDiagram": "Threat Model Diagram \\| ThreatModeler",
+    "threatModelsArchived": "Archived Threat Models \\| ThreatModeler",
+    "threatFramework": "Threat Framework \\| ThreatModeler"
+  },
+  "timeouts": {
+    "test": 120000,
+    "navShort": 10000,
+    "navMedium": 30000,
+    "navLong": 60000,
+    "loaderIdle": 30000,
+    "elementVisible": 15000,
+    "buttonEnabled": 10000,
+    "dialogHidden": 30000,
+    "rowVisible": 30000,
+    "saveConfirm": 15000,
+    "linkEditorVisible": 5000,
+    "optionsVisible": 5000,
+    "typingDelaySlow": 30,
+    "typingDelayMedium": 20,
+    "typingDelayFast": 10,
+    "dismissOverlayPause": 300
+  },
+  "selectors": {
+    "loaderOverlayVisible": "tm-loader .overlay:visible",
+    "loaderOverlayAll": "tm-loader .overlay",
+    "overlaysToRemove": "ngx-guided-tour, .guided-tour-user-input-mask, .k-overlay, .tour-backdrop, tm-release-note",
+    "promoPopups": "kendo-popup, kendo-dialog, .k-dialog, .k-window",
+    "kendoDialog": "kendo-dialog",
+    "kendoDatepickerInput": "kendo-datepicker input",
+    "fileInput": "input[type=\"file\"]",
+    "visibleOptions": "li[role=\"option\"]:visible",
+    "kendoMultiselectInput": "input.k-input-inner",
+    "threatFrameworkLink": "a[aria-label=\"Threat Framework\"]",
+    "archiveIcon": "i[aria-label=\"Archive\"]",
+    "descriptionEditor": ".ql-editor[data-placeholder*=\"Description\"]",
+    "componentNameInput": "input[placeholder=\"Component Name\"]",
+    "securityRequirementNameInput": "input[placeholder=\"Security Requirement name\"], input[placeholder*=\"Security Requirement\"]",
+    "testCaseNameInput": "input[placeholder=\"Test Case name\"], input[placeholder*=\"Test Case\"]",
+    "testGroupInput": "input[placeholder*=\"Test group\"]",
+    "linkTextInput": "input[placeholder=\"Enter Link Text\"]",
+    "linkUrlInput": "input[placeholder=\"Enter URL\"]"
+  },
+  "selectorTemplates": {
+    "textboxByPlaceholder": "input[placeholder*=\"{value}\"]",
+    "quillByPlaceholder": ".ql-editor[data-placeholder*=\"{value}\"]",
+    "dropdownByAriaLabel": "kendo-dropdownlist[aria-label*=\"{value}\"]",
+    "multiselectByAriaLabel": "kendo-multiselect[aria-label*=\"{value}\"]"
+  },
+  "roles": {
+    "buttons": {
+      "createNewMenu": "Create new menu",
+      "createNewModel": "Create New Model",
+      "create": "Create",
+      "save": "Save",
+      "archive": "Archive",
+      "signIn": "Sign in",
+      "skip": "Skip",
+      "selectRow": "Select Row",
+      "expandDetails": "Expand Details",
+      "threatModelMenu": "Threat Model menu",
+      "component": "Component",
+      "securityRequirement": "Security Requirement",
+      "testCase": "Test Case"
+    },
+    "menuItems": {
+      "threatModel": "Threat Model"
+    },
+    "textboxes": {
+      "modelName": "Enter Model Name",
+      "version": "Enter Version",
+      "username": "Username*",
+      "password": "Password*",
+      "versionField": "Version *"
+    },
+    "searchbox": "Search",
+    "dialogs": {
+      "createThreatModel": "Create New Threat Model",
+      "archiveThreatModel": "Archive threat model",
+      "newComponent": "New Component",
+      "newSecurityRequirement": "New Security Requirement",
+      "newTestCase": "New Test Case"
+    },
+    "switches": {
+      "wingmanPattern": "Generate Threats and Security Requirements with WingMan"
+    }
+  },
+  "dismissButtonNames": ["Skip for Now", "Dismiss", "Skip", "Close", "Not now", "Maybe later"],
+  "promoTextMarkers": ["try report agent", "polished report"],
+  "entityTabs": {
+    "components": "Components",
+    "securityRequirements": "Security Requirements",
+    "testCases": "Test Cases",
+    "threats": "Threats"
+  },
+  "alwaysHandledLabels": [
+    "Name",
+    "Model Type",
+    "Version",
+    "Project Status",
+    "Risk",
+    "Library",
+    "Component Type"
+  ],
+  "localStorageKeys": {
+    "guidedTour": "threat-modeler-tour"
+  },
+  "blankPngBase64": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII=",
+  "screenshotFolders": {
+    "tmCreate": "tm-create-ts",
+    "tmEdit": "tm-edit-ts",
+    "tmArchive": "tm-archive-ts",
+    "tfCreate": "tf-create-ts",
+    "srCreate": "sr-create-ts",
+    "tcCreate": "tc-create-ts"
+  },
+  "screenshotSteps": {
+    "afterLogin": "01-after-login",
+    "tmCreate": {
+      "dialogOpen": "02-dialog-open",
+      "formFilled": "03-form-filled",
+      "diagramLoaded": "04-diagram-loaded"
+    },
+    "tmEdit": {
+      "createFilled": "02-create-filled",
+      "diagramLoaded": "03-diagram-loaded",
+      "listWithRow": "04-list-with-row",
+      "inlinePanel": "05-inline-panel",
+      "versionChanged": "06-version-changed",
+      "saved": "07-saved"
+    },
+    "tmArchive": {
+      "createFilled": "02-create-filled",
+      "diagramLoaded": "03-diagram-loaded",
+      "rowSelected": "04-row-selected",
+      "menuOpen": "05-menu-open",
+      "confirmDialog": "06-confirm-dialog",
+      "removedFromActive": "07-removed-from-active-list",
+      "archivedList": "08-archived-list"
+    },
+    "tfCreate": {
+      "frameworkPage": "02-framework-page",
+      "dialogOpen": "03-dialog-open",
+      "formFilled": "04-form-filled",
+      "wingmanOff": "05-wingman-off",
+      "dialogClosed": "06-dialog-closed",
+      "componentListed": "07-component-listed"
+    },
+    "srCreate": {
+      "frameworkPage": "02-framework-page",
+      "dialogOpen": "03-dialog-open",
+      "formFilled": "04-form-filled",
+      "wingmanOff": "05-wingman-off",
+      "dialogClosed": "06-dialog-closed",
+      "srListed": "07-sr-listed"
+    },
+    "tcCreate": {
+      "frameworkPage": "02-framework-page",
+      "dialogOpen": "03-dialog-open",
+      "formFilled": "04-form-filled",
+      "dialogClosed": "05-dialog-closed",
+      "testCaseListed": "06-testcase-listed"
+    }
+  },
+  "threatModel": {
+    "namePrefixes": {
+      "create": "AutoTM",
+      "edit": "EditTM",
+      "archive": "DeleteTM"
+    },
+    "version": {
+      "initial": "1.0",
+      "updated": "2.0"
+    },
+    "fields": {
+      "textboxes": [
+        { "label": "TM text1", "placeholder": "Enter TM text1", "value": "auto-text" },
+        { "label": "TM - number", "placeholder": "Enter TM - number", "value": "42" }
+      ],
+      "quillLabel": "TM TextArea",
+      "dateLabel": "TM Date",
+      "singleSelects": ["TM - User", "TM - Department", "TM - single select"],
+      "multiSelectLabel": "TM - Multi select",
+      "linkLabel": "TM - link"
+    }
+  },
+  "threatFramework": {
+    "component": {
+      "namePrefix": "AutoComp",
+      "description": "auto-generated component for E2E",
+      "testGroup": "auto-test-group",
+      "fields": {
+        "textboxes": [
+          { "label": "Component text", "placeholder": "Enter Component text", "value": "auto-text" },
+          { "label": "Compoent - number", "placeholder": "Enter Compoent - number", "value": "42" }
+        ],
+        "quillLabel": "Component - textArea",
+        "dateLabel": "Compoennt - Date",
+        "singleSelects": ["Compoent - User", "Component - Department", "Compoennt - Single Select"],
+        "multiSelectLabel": "Compoennt - MultiSelect",
+        "linkLabel": "Component - Link",
+        "fileUploadLabel": "Compoennt - File Upload"
+      }
+    },
+    "securityRequirement": {
+      "namePrefix": "AutoSR",
+      "description": "auto-generated security requirement for E2E",
+      "fields": {
+        "textboxes": [],
+        "singleSelects": []
+      }
+    },
+    "testCase": {
+      "namePrefix": "AutoTC",
+      "description": "auto-generated test case for E2E",
+      "fields": {
+        "textboxes": [],
+        "singleSelects": []
+      }
+    }
+  },
+  "customFieldDefaults": {
+    "textValue": "auto-text",
+    "numberValue": "42",
+    "date": "20260518",
+    "link": {
+      "text": "example",
+      "url": "https://example.com"
+    },
+    "uploadFileName": "blank.png",
+    "uploadMimeType": "image/png"
+  }
+}

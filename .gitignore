@@ -10,4 +10,4 @@ screenshots/
 .DS_Store
 Thumbs.db
 .claude/
-*.yml
+/*.yml

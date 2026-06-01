@@ -1,0 +1,90 @@
+name: Playwright E2E
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Nightly run at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      grep:
+        description: "Only run tests whose title matches this pattern"
+        required: false
+        default: ""
+      workers:
+        description: "Number of parallel workers"
+        required: false
+        default: "2"
+
+concurrency:
+  group: playwright-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  e2e:
+    name: Playwright tests (chromium)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TM_USER: ${{ secrets.TM_USER }}
+      TM_PASS: ${{ secrets.TM_PASS }}
+      # Optional override; falls back to baseUrl in tests/data/testdata.json
+      TM_BASE_URL: ${{ secrets.TM_BASE_URL }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps (cache hit path)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Run Playwright tests
+        run: |
+          npx playwright test \
+            --workers=${{ inputs.workers || '2' }} \
+            ${{ inputs.grep && format('--grep "{0}"', inputs.grep) || '' }}
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload traces and screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures
+          path: |
+            test-results/
+            screenshots/
+          retention-days: 14
