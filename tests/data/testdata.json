@@ -59,7 +59,9 @@
     "testCaseNameInput": "input[placeholder=\"Test Case name\"], input[placeholder*=\"Test Case\"]",
     "testGroupInput": "input[placeholder*=\"Test group\"]",
     "linkTextInput": "input[placeholder=\"Enter Link Text\"]",
-    "linkUrlInput": "input[placeholder=\"Enter URL\"]"
+    "linkUrlInput": "input[placeholder=\"Enter URL\"]",
+    "resourceTypeValueInput": "input[placeholder=\"Resource Type Value\"]",
+    "kendoNotification": "kendo-notification, .k-notification"
   },
   "selectorTemplates": {
     "textboxByPlaceholder": "input[placeholder*=\"{value}\"]",
@@ -81,7 +83,8 @@
       "threatModelMenu": "Threat Model menu",
       "component": "Component",
       "securityRequirement": "Security Requirement",
-      "testCase": "Test Case"
+      "testCase": "Test Case",
+      "assistRule": "Assist Rule"
     },
     "menuItems": {
       "threatModel": "Threat Model"
@@ -99,7 +102,8 @@
       "archiveThreatModel": "Archive threat model",
       "newComponent": "New Component",
       "newSecurityRequirement": "New Security Requirement",
-      "newTestCase": "New Test Case"
+      "newTestCase": "New Test Case",
+      "addResourceTypeValue": "Add Resource Type Value"
     },
     "switches": {
       "wingmanPattern": "Generate Threats and Security Requirements with WingMan"
@@ -132,7 +136,8 @@
     "tmArchive": "tm-archive-ts",
     "tfCreate": "tf-create-ts",
     "srCreate": "sr-create-ts",
-    "tcCreate": "tc-create-ts"
+    "tcCreate": "tc-create-ts",
+    "arCreate": "ar-create-ts"
   },
   "screenshotSteps": {
     "afterLogin": "01-after-login",
@@ -180,6 +185,12 @@
       "formFilled": "04-form-filled",
       "dialogClosed": "05-dialog-closed",
       "testCaseListed": "06-testcase-listed"
+    },
+    "arCreate": {
+      "frameworkPage": "02-framework-page",
+      "dialogOpen": "03-dialog-open",
+      "formFilled": "04-form-filled",
+      "dialogClosed": "05-dialog-closed"
     }
   },
   "threatModel": {
@@ -237,6 +248,9 @@
         "textboxes": [],
         "singleSelects": []
       }
+    },
+    "assistRule": {
+      "namePrefix": "AutoAssist"
     }
   },
   "customFieldDefaults": {

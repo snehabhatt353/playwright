@@ -41,6 +41,12 @@ async function login(page) {
     await page.waitForURL(loginOrApp, { timeout: TIMEOUTS.navMedium });
   }
   if (new RegExp(PATHS.login.replace(/\//g, "\\/"), "i").test(page.url())) {
+    // The login page can be covered by a `tm-takeover-root` modal whose
+    // backdrop swallows clicks on the username field. Remove it before
+    // attempting to fill credentials.
+    await page.evaluate(() => {
+      document.querySelectorAll("#tm-takeover-root").forEach((el) => el.remove());
+    });
     const usernameField = page.getByRole("textbox", { name: ROLES.textboxes.username });
     const passwordField = page.getByRole("textbox", { name: ROLES.textboxes.password });
     await expect(usernameField).toBeVisible({ timeout: TIMEOUTS.elementVisible });
