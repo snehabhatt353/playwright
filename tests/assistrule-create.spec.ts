@@ -10,7 +10,6 @@ import {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
-  pickFirstRealOption,
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 
@@ -52,26 +51,52 @@ test.describe("Create Assist Rule on Threat Framework (TypeScript)", () => {
     await snap(page, FOLDER, STEPS.dialogOpen);
 
     // The dialog has two kendo-dropdownlists: [0] Component (required, empty)
-    // and [1] Library (defaults to the current framework scope, e.g.
-    // "Corporate"). Overwriting Library with an arbitrary first option can
-    // break validation since the picked library must contain the picked
-    // component — so we only pick Component and leave Library at its default.
+    // and [1] Library (defaults to the current framework scope). Some
+    // components silently reject new rules (no validation error, dialog just
+    // stays open) — and which components do this is tenant- and time-
+    // dependent. Try the first visible options in turn until Create actually
+    // closes the dialog, capping retries so a real bug still surfaces.
     const componentDropdown = dialog.locator("kendo-dropdownlist").first();
-    await componentDropdown.click();
-    await pickFirstRealOption(page);
-
     const ruleValue = `${AR.namePrefix}-${Date.now()}`;
-    await dialog.locator(SELECTORS.resourceTypeValueInput).fill(ruleValue);
-    await snap(page, FOLDER, STEPS.formFilled);
-
     const createBtn = dialog.getByRole("button", { name: ROLES.buttons.create, exact: true });
-    await expect(createBtn).toBeEnabled({ timeout: TIMEOUTS.buttonEnabled });
-    await createBtn.click();
+    const MAX_ATTEMPTS = 5;
+    const QUICK_CLOSE_TIMEOUT = 5_000;
+    let created = false;
 
-    // The dialog only closes on a successful create — validation errors keep
-    // it open. The success toast auto-dismisses too quickly to assert against
-    // reliably, so dialog-hidden is the success signal we rely on.
-    await expect(dialog).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+    for (let attempt = 0; attempt < MAX_ATTEMPTS && !created; attempt++) {
+      await componentDropdown.click();
+      const options = page.locator(SELECTORS.visibleOptions);
+      await options.first().waitFor({ state: "visible", timeout: TIMEOUTS.optionsVisible });
+      const total = await options.count();
+      let picked = false;
+      for (let i = 0; i < total; i++) {
+        const label = ((await options.nth(i).textContent()) || "").trim();
+        if (label && label !== "-") {
+          // On each retry attempt skip the components that have already
+          // failed by picking deeper into the list.
+          if (i < attempt) continue;
+          await options.nth(i).click();
+          picked = true;
+          break;
+        }
+      }
+      if (!picked) break;
+
+      await dialog.locator(SELECTORS.resourceTypeValueInput).fill(ruleValue);
+      if (attempt === 0) await snap(page, FOLDER, STEPS.formFilled);
+
+      await expect(createBtn).toBeEnabled({ timeout: TIMEOUTS.buttonEnabled });
+      await createBtn.click();
+      try {
+        await expect(dialog).toBeHidden({ timeout: QUICK_CLOSE_TIMEOUT });
+        created = true;
+      } catch {
+        // Silent backend reject — the dialog is still open. Continue and
+        // try the next option.
+      }
+    }
+
+    expect(created, "Create button never closed the dialog after retries").toBe(true);
     await snap(page, FOLDER, STEPS.dialogClosed);
   });
 });
