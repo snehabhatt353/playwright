@@ -1,8 +1,8 @@
 {
   "baseUrl": "https://tmdev.threatmodeler.us",
   "credentials": {
-    "username": "",
-    "password": ""
+    "username": "sbhatt",
+    "password": "Sneha@123"
   },
   "paths": {
     "root": "/",
