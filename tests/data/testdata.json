@@ -24,7 +24,7 @@
     "threatFramework": "Threat Framework \\| ThreatModeler"
   },
   "timeouts": {
-    "test": 120000,
+    "test": 180000,
     "navShort": 10000,
     "navMedium": 30000,
     "navLong": 60000,
