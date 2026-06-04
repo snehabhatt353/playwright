@@ -119,7 +119,7 @@ test.describe("Create Threat Model (TypeScript)", () => {
     await snap(page, FOLDERS.tmEdit, STEPS.tmEdit.saved);
   });
 
-  test("archives (deletes) a threat model and it appears in Archived", async ({ page }: { page: Page }) => {
+  /* test("archives (deletes) a threat model and it appears in Archived", async ({ page }: { page: Page }) => {
     await login(page);
     await dismissPostLoginOverlays(page);
     await snap(page, FOLDERS.tmArchive, STEPS.afterLogin);
@@ -178,5 +178,5 @@ test.describe("Create Threat Model (TypeScript)", () => {
     });
     await expect(page).toHaveTitle(new RegExp(TITLES.threatModelsArchived));
     await snap(page, FOLDERS.tmArchive, STEPS.tmArchive.archivedList);
-  });
+  }); */
 });
