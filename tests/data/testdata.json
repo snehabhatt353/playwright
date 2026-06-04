@@ -61,7 +61,12 @@
     "linkTextInput": "input[placeholder=\"Enter Link Text\"]",
     "linkUrlInput": "input[placeholder=\"Enter URL\"]",
     "resourceTypeValueInput": "input[placeholder=\"Resource Type Value\"]",
-    "kendoNotification": "kendo-notification, .k-notification"
+    "kendoNotification": "kendo-notification, .k-notification",
+    "componentMoreActionsTag": "#moreAction-tag-button",
+    "componentMoreActionsDelete": "#moreAction-delete-button",
+    "componentVisibilityHiddenOption": "#threatframework-visibilityhiddenstatus-button",
+    "componentVisibilityVisibleOption": "#threatframework-visibilityvisiblestatus-button",
+    "deleteConfirmButton": "#confirmAction-Delete-button"
   },
   "selectorTemplates": {
     "textboxByPlaceholder": "input[placeholder*=\"{value}\"]",
@@ -84,7 +89,15 @@
       "component": "Component",
       "securityRequirement": "Security Requirement",
       "testCase": "Test Case",
-      "assistRule": "Assist Rule"
+      "assistRule": "Assist Rule",
+      "edit": "Edit",
+      "copy": "Copy",
+      "deepCopy": "Deep Copy",
+      "hide": "Hide",
+      "moreActions": "More Actions",
+      "submit": "Submit",
+      "delete": "Delete",
+      "visibleFilter": "Visible"
     },
     "menuItems": {
       "threatModel": "Threat Model"
@@ -103,7 +116,12 @@
       "newComponent": "New Component",
       "newSecurityRequirement": "New Security Requirement",
       "newTestCase": "New Test Case",
-      "addResourceTypeValue": "Add Resource Type Value"
+      "addResourceTypeValue": "Add Resource Type Value",
+      "editComponent": "Edit Component",
+      "copyComponents": "Copy components",
+      "hideRecord": "Do you want to hide this record?",
+      "addTags": "Add tags",
+      "deleteComponents": "Delete Components"
     },
     "switches": {
       "wingmanPattern": "Generate Threats and Security Requirements with WingMan"
@@ -137,7 +155,13 @@
     "tfCreate": "tf-create-ts",
     "srCreate": "sr-create-ts",
     "tcCreate": "tc-create-ts",
-    "arCreate": "ar-create-ts"
+    "arCreate": "ar-create-ts",
+    "compEdit": "comp-edit-ts",
+    "compCopy": "comp-copy-ts",
+    "compDeepCopy": "comp-deepcopy-ts",
+    "compHide": "comp-hide-ts",
+    "compTag": "comp-tag-ts",
+    "compDelete": "comp-delete-ts"
   },
   "screenshotSteps": {
     "afterLogin": "01-after-login",
@@ -191,6 +215,13 @@
       "dialogOpen": "03-dialog-open",
       "formFilled": "04-form-filled",
       "dialogClosed": "05-dialog-closed"
+    },
+    "compAction": {
+      "created": "01-component-created",
+      "rowSelected": "02-row-selected",
+      "dialogOpen": "03-dialog-open",
+      "actionApplied": "04-action-applied",
+      "verified": "05-verified"
     }
   },
   "threatModel": {
@@ -218,6 +249,17 @@
   "threatFramework": {
     "component": {
       "namePrefix": "AutoComp",
+      "namePrefixes": {
+        "create": "AutoComp",
+        "edit": "EditComp",
+        "copy": "CopyComp",
+        "deepCopy": "DeepCopyComp",
+        "hide": "HideComp",
+        "tag": "TagComp",
+        "delete": "DelComp"
+      },
+      "editedSuffix": "-Edited",
+      "tagValue": "auto-tag",
       "description": "auto-generated component for E2E",
       "testGroup": "auto-test-group",
       "fields": {
