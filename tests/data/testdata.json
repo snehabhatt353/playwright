@@ -97,7 +97,9 @@
       "moreActions": "More Actions",
       "submit": "Submit",
       "delete": "Delete",
-      "visibleFilter": "Visible"
+      "visibleFilter": "Visible",
+      "hiddenFilter": "Hidden",
+      "selectAll": "Select All"
     },
     "menuItems": {
       "threatModel": "Threat Model"
@@ -133,7 +135,8 @@
     "components": "Components",
     "securityRequirements": "Security Requirements",
     "testCases": "Test Cases",
-    "threats": "Threats"
+    "threats": "Threats",
+    "attributes": "Attributes"
   },
   "alwaysHandledLabels": [
     "Name",
