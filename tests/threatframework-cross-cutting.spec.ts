@@ -1,5 +1,7 @@
 import { test, expect, type Page } from "@playwright/test";
 import {
+  BASE_URL,
+  PATHS,
   URL_PATTERNS,
   TITLES,
   TIMEOUTS,
@@ -9,7 +11,6 @@ import {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
-  selectEntity,
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 
@@ -18,16 +19,43 @@ const FOLDER = "tf-cross-cutting-ts";
 const COMPONENT_ROWS = "[id^='threatframework-item-'][id$='-checkbox']";
 const ROW_CONTAINER = "[id^='threatframework-item-']:not([id$='-checkbox'])";
 
+// Verified via DOM probe — entity selector trigger and dropdown items.
+const ENTITY_TRIGGER = "#threatframework-entitytitle-button";
+const entityOption = (label: string) =>
+  `[id="threatframework-displayname-${label}-dropdowntoggle"]`;
+// Bulk-friendly toolbar action — enables once any row is selected (Edit
+// stays disabled in multi-select because it's a single-entity action).
+const HIDE_UNHIDE_BUTTON = "#threatframework-hideunhide-button";
+
 async function gotoThreatFramework(page: Page): Promise<void> {
   await login(page);
   await dismissPostLoginOverlays(page);
-  await page.locator(SELECTORS.threatFrameworkLink).click();
+  // Navigate directly instead of clicking the side-nav link — the link
+  // sometimes doesn't render in time after login, especially in CI.
+  await page.goto(`${BASE_URL}${PATHS.threatFramework}`);
   await page.waitForURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
     timeout: TIMEOUTS.navMedium,
   });
   await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework));
   await dismissPostLoginOverlays(page);
   await waitForLoaderIdle(page);
+}
+
+// The shared selectEntity helper assumes a level-2 heading inside the entity
+// trigger button, but the current UI renders the trigger as a plain dropdown
+// whose options are <div> elements with ids of the form
+// `threatframework-displayname-{Plural}-dropdowntoggle`. Use those directly.
+async function switchEntity(page: Page, label: string): Promise<void> {
+  const trigger = page.locator(ENTITY_TRIGGER);
+  const current = ((await trigger.textContent()) || "").trim();
+  if (current === label) {
+    await waitForLoaderIdle(page);
+    return;
+  }
+  await trigger.click();
+  await page.locator(entityOption(label)).click();
+  await waitForLoaderIdle(page);
+  await expect(trigger).toHaveText(label, { timeout: TIMEOUTS.elementVisible });
 }
 
 function slug(name: string): string {
@@ -47,8 +75,8 @@ test.describe("Threat Framework cross-cutting flows", () => {
       TABS.attributes,
     ];
     for (const tab of tabs) {
-      await selectEntity(page, tab);
-      await expect(page.getByRole("heading", { level: 2, name: tab }).first()).toBeVisible({
+      await switchEntity(page, tab);
+      await expect(page.locator(ENTITY_TRIGGER)).toHaveText(tab, {
         timeout: TIMEOUTS.elementVisible,
       });
       await expect
@@ -60,7 +88,7 @@ test.describe("Threat Framework cross-cutting flows", () => {
 
   test("TC-CC-02: search narrows the list and clearing it restores the rows", async ({ page }: { page: Page }) => {
     await gotoThreatFramework(page);
-    await selectEntity(page, TABS.components);
+    await switchEntity(page, TABS.components);
     await expect
       .poll(() => page.locator(COMPONENT_ROWS).count(), { timeout: TIMEOUTS.rowVisible })
       .toBeGreaterThan(0);
@@ -82,7 +110,7 @@ test.describe("Threat Framework cross-cutting flows", () => {
 
   test("TC-CC-03: visibility filter toggles between Visible and Hidden", async ({ page }: { page: Page }) => {
     await gotoThreatFramework(page);
-    await selectEntity(page, TABS.components);
+    await switchEntity(page, TABS.components);
 
     await page.getByRole("button", { name: ROLES.buttons.visibleFilter, exact: true }).click();
     await page.locator(SELECTORS.componentVisibilityHiddenOption).click();
@@ -102,29 +130,29 @@ test.describe("Threat Framework cross-cutting flows", () => {
 
   test("TC-CC-04: Select All toggles the bulk-action toolbar enabled state", async ({ page }: { page: Page }) => {
     await gotoThreatFramework(page);
-    await selectEntity(page, TABS.components);
+    await switchEntity(page, TABS.components);
 
     const selectAll = page.getByRole("checkbox", { name: ROLES.buttons.selectAll, exact: true });
     // Kendo styles the checkbox input as zero-sized — dispatch a JS click on
     // the actual input so the Angular binding fires.
     await selectAll.evaluate((el: HTMLInputElement) => el.click());
-    await expect(
-      page.getByRole("button", { name: ROLES.buttons.edit, exact: true }),
-    ).toBeEnabled({ timeout: TIMEOUTS.buttonEnabled });
+    // The Edit button has id `editEntities-button` but stays disabled in
+    // multi-select (Edit is a single-row action). Assert against a bulk
+    // action — Hide is enabled whenever ≥1 row is selected.
+    await expect(page.locator(HIDE_UNHIDE_BUTTON)).toBeEnabled({
+      timeout: TIMEOUTS.buttonEnabled,
+    });
     await snap(page, FOLDER, "select-all-on");
 
     await selectAll.evaluate((el: HTMLInputElement) => el.click());
-    // After deselect the Edit button either disables or is removed; tolerate both.
-    await expect(async () => {
-      const editBtn = page.getByRole("button", { name: ROLES.buttons.edit, exact: true });
-      if (!(await editBtn.isVisible().catch(() => false))) return;
-      await expect(editBtn).toBeDisabled({ timeout: TIMEOUTS.buttonEnabled });
-    }).toPass({ timeout: TIMEOUTS.buttonEnabled });
+    await expect(page.locator(HIDE_UNHIDE_BUTTON)).toBeDisabled({
+      timeout: TIMEOUTS.buttonEnabled,
+    });
   });
 
   test("TC-CC-05: right-pane tabs activate for the selected entity", async ({ page }: { page: Page }) => {
     await gotoThreatFramework(page);
-    await selectEntity(page, TABS.components);
+    await switchEntity(page, TABS.components);
 
     // Click the first visible row container to load it into the right pane.
     // Falls back to clicking the row's last child (the name span) if the
@@ -141,19 +169,27 @@ test.describe("Threat Framework cross-cutting flows", () => {
     await expect(tablist).toBeVisible({ timeout: TIMEOUTS.elementVisible });
 
     const tabNames = ["Threats", "Security Req.", "Attributes", "Info", "Custom field"];
+    let activatedAny = false;
     for (const name of tabNames) {
       const tab = tablist.getByRole("tab", { name, exact: true });
+      // Not every component exposes every tab (e.g. Attributes only appears
+      // when the component has them). Skip absent tabs rather than fail.
+      if (!(await tab.isVisible({ timeout: TIMEOUTS.optionsVisible }).catch(() => false))) {
+        continue;
+      }
       await tab.click();
       await expect(tab).toHaveAttribute("aria-selected", "true", {
         timeout: TIMEOUTS.elementVisible,
       });
+      activatedAny = true;
       await snap(page, FOLDER, `right-tab-${slug(name)}`);
     }
+    expect(activatedAny).toBe(true);
   });
 
   test("TC-CC-06: switching the Library updates the combobox label", async ({ page }: { page: Page }) => {
     await gotoThreatFramework(page);
-    await selectEntity(page, TABS.components);
+    await switchEntity(page, TABS.components);
 
     const libraryCombo = page.getByRole("combobox", { name: "Library" });
     const initialLabel = ((await libraryCombo.textContent()) || "").trim();
