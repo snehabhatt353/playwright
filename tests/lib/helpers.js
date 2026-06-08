@@ -28,7 +28,7 @@ function applyTemplate(tmpl, value) {
 }
 
 /** @param {Page} page */
-async function login(page) {
+async function attemptLogin(page) {
   await page.goto(`${BASE_URL}${PATHS.root}`);
   // tmdev's root sometimes hangs without redirecting; if it doesn't bounce
   // to the login page or the app within 10s, force-navigate to /threatmodels
@@ -71,6 +71,39 @@ async function login(page) {
       timeout: TIMEOUTS.navMedium,
     });
   }
+}
+
+/**
+ * tmdev intermittently drops the session right after sign-in (the post-login
+ * landing keeps the bare "ThreatModeler" title and the next navigation
+ * bounces back to /idsvr/Account/Login). Retry with a clean session on
+ * failure rather than letting the whole test fail at the login step.
+ * @param {Page} page
+ */
+async function login(page) {
+  const MAX_ATTEMPTS = 2;
+  let lastError;
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    try {
+      await attemptLogin(page);
+      return;
+    } catch (err) {
+      lastError = err;
+      if (attempt === MAX_ATTEMPTS) break;
+      // Drop cookies + storage so the retry starts from a clean session
+      // (the tenant otherwise hands us back the same partially-broken auth).
+      await page.context().clearCookies().catch(() => {});
+      await page
+        .evaluate(() => {
+          try {
+            localStorage.clear();
+            sessionStorage.clear();
+          } catch {}
+        })
+        .catch(() => {});
+    }
+  }
+  throw lastError;
 }
 
 /** @param {Page} page */
