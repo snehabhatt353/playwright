@@ -155,6 +155,7 @@
     "tmCreate": "tm-create-ts",
     "tmEdit": "tm-edit-ts",
     "tmArchive": "tm-archive-ts",
+    "tmModify": "tm-modify-ts",
     "tfCreate": "tf-create-ts",
     "srCreate": "sr-create-ts",
     "tcCreate": "tc-create-ts",
@@ -189,6 +190,14 @@
       "confirmDialog": "06-confirm-dialog",
       "removedFromActive": "07-removed-from-active-list",
       "archivedList": "08-archived-list"
+    },
+    "tmModify": {
+      "created": "01-created",
+      "initialList": "02-initial-list",
+      "modelInfoOpen": "03-model-info-open",
+      "versionChanged": "04-version-changed",
+      "saved": "05-saved",
+      "listUpdated": "06-list-updated"
     },
     "tfCreate": {
       "frameworkPage": "02-framework-page",
@@ -231,7 +240,8 @@
     "namePrefixes": {
       "create": "AutoTM",
       "edit": "EditTM",
-      "archive": "DeleteTM"
+      "archive": "DeleteTM",
+      "modify": "ModifyTM"
     },
     "version": {
       "initial": "1.0",

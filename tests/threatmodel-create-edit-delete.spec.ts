@@ -31,10 +31,10 @@ const FOLDERS = testdata.screenshotFolders;
 const STEPS = testdata.screenshotSteps;
 const DIAGRAM_URL = new RegExp(URL_PATTERNS.threatModelDiagram, "i");
 
-test.describe("Create Threat Model (TypeScript)", () => {
+test.describe("Threat Model", () => {
   test.setTimeout(TIMEOUTS.test);
 
-  test("creates a new blank threat model with required fields", async ({ page }: { page: Page }) => {
+  test("TC-01: creates a new blank threat model", async ({ page }: { page: Page }) => {
     await login(page);
     await dismissPostLoginOverlays(page);
     await snap(page, FOLDERS.tmCreate, STEPS.afterLogin);
@@ -67,7 +67,7 @@ test.describe("Create Threat Model (TypeScript)", () => {
     await snap(page, FOLDERS.tmCreate, STEPS.tmCreate.diagramLoaded);
   });
 
-  test("edits an existing threat model's version and persists the change", async ({ page }: { page: Page }) => {
+  test("TC-02: edits an existing threat model's version and persists the change", async ({ page }: { page: Page }) => {
     await login(page);
     await dismissPostLoginOverlays(page);
     await snap(page, FOLDERS.tmEdit, STEPS.afterLogin);
@@ -119,7 +119,7 @@ test.describe("Create Threat Model (TypeScript)", () => {
     await snap(page, FOLDERS.tmEdit, STEPS.tmEdit.saved);
   });
 
-  test("archives (deletes) a threat model and it appears in Archived", async ({ page }: { page: Page }) => {
+  test("TC-03: archives a threat model and it appears in Archived", async ({ page }: { page: Page }) => {
     await login(page);
     await dismissPostLoginOverlays(page);
     await snap(page, FOLDERS.tmArchive, STEPS.afterLogin);
@@ -178,5 +178,82 @@ test.describe("Create Threat Model (TypeScript)", () => {
     });
     await expect(page).toHaveTitle(new RegExp(TITLES.threatModelsArchived));
     await snap(page, FOLDERS.tmArchive, STEPS.tmArchive.archivedList);
+  });
+
+  test("TC-04: diagram change updates the Modified date on the home screen", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+    await snap(page, FOLDERS.tmModify, STEPS.afterLogin);
+
+    // Create a fresh model so we know exactly which row to assert on.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const dialog: Locator = page.getByRole("dialog", { name: ROLES.dialogs.createThreatModel });
+    await expect(dialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `${TM.namePrefixes.modify}-${Date.now()}`;
+    await dialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await dialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, dialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.created);
+
+    // Snapshot the initial state on the home screen before the edit.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    await waitForLoaderIdle(page);
+    const initialRow = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(initialRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    const initialModified = ((await initialRow.locator("td[role='gridcell']").nth(6).textContent()) || "").trim();
+    expect(initialModified).toMatch(/Today/);
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.initialList);
+
+    // Re-open the diagram by clicking the model name in the row.
+    await initialRow.getByRole("button", { name: modelName, exact: true }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await waitForLoaderIdle(page);
+
+    // The diagram's project-name button opens the "Model Info" kendo dialog
+    // (portal-mounted, not inside <tm-diagram-model-info>). It exposes the
+    // same Name / Version fields as the create dialog; updating Version +
+    // Save is a clean model-level change.
+    await page.locator(".project-name-btn").click();
+    const modelInfo = page.getByRole("dialog", { name: "Model Info" });
+    await expect(modelInfo).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.modelInfoOpen);
+
+    const versionInput = modelInfo.locator('input[placeholder="Version"]').first();
+    await expect(versionInput).toBeVisible();
+    await versionInput.fill(TM.version.updated);
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.versionChanged);
+
+    await modelInfo.getByRole("button", { name: ROLES.buttons.save, exact: true }).click();
+    await expect(modelInfo).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+    await waitForLoaderIdle(page);
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.saved);
+
+    // Back on the home screen, the row should show the new version, sit at
+    // the top of the (Modified-DESC) list, and have a "Today …" timestamp.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    await waitForLoaderIdle(page);
+
+    const updatedRow = page
+      .getByRole("row", {
+        name: new RegExp(`${modelName}\\s+${TM.version.updated.replace(".", "\\.")}`),
+      })
+      .first();
+    await expect(updatedRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+
+    const updatedModified = ((await updatedRow.locator("td[role='gridcell']").nth(6).textContent()) || "").trim();
+    expect(updatedModified).toMatch(/Today/);
+
+    // The first data row in the Modified-DESC grid should be ours.
+    const firstDataRowName = ((await page.getByRole("row").nth(1).locator("td[role='gridcell']").nth(1).textContent()) || "").trim();
+    expect(firstDataRowName).toContain(modelName);
+
+    await snap(page, FOLDERS.tmModify, STEPS.tmModify.listUpdated);
   });
 });
