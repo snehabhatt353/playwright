@@ -1,6 +1,5 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
 import {
-  URL_PATTERNS,
   TITLES,
   TIMEOUTS,
   SELECTORS,
@@ -10,6 +9,7 @@ import {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
+  gotoThreatFramework,
   fillRequiredCustomFields,
   selectEntity,
 } from "./lib/helpers";
@@ -38,10 +38,7 @@ test.describe("Create Test Case on Threat Framework (TypeScript)", () => {
     await dismissPostLoginOverlays(page);
     await snap(page, FOLDER, STEPS.afterLogin);
 
-    await page.locator(SELECTORS.threatFrameworkLink).click();
-    await page.waitForURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
-      timeout: TIMEOUTS.navMedium,
-    });
+    await gotoThreatFramework(page);
     await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework));
     await dismissPostLoginOverlays(page);
     await waitForLoaderIdle(page);

@@ -181,6 +181,36 @@ async function waitForLoaderIdle(page, timeout = TIMEOUTS.loaderIdle) {
 }
 
 /**
+ * Direct-navigate to the Threat Framework page with retry. The side-nav
+ * `a[aria-label="Threat Framework"]` link sometimes doesn't render after
+ * login, and a single `page.goto` can race against a pending Angular
+ * redirect and end up back on /threatmodels. Settle, navigate, verify
+ * title; retry up to 3 times.
+ * @param {Page} page
+ */
+async function gotoThreatFramework(page) {
+  await waitForLoaderIdle(page, TIMEOUTS.navMedium).catch(() => {});
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    try {
+      await page.goto(`${BASE_URL}${PATHS.threatFramework}`);
+      await expect(page).toHaveURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
+        timeout: TIMEOUTS.navShort,
+      });
+      await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework), {
+        timeout: TIMEOUTS.navShort,
+      });
+      await waitForLoaderIdle(page).catch(() => {});
+      return;
+    } catch (err) {
+      lastError = err;
+      await waitForLoaderIdle(page, TIMEOUTS.navShort).catch(() => {});
+    }
+  }
+  throw lastError;
+}
+
+/**
  * Switches the Threat Framework entity selector to the named tab
  * (Components / Security Requirements / Test Cases / Threats). The selector
  * button's accessible name is the *current* entity (which changes), so we
@@ -383,6 +413,7 @@ module.exports = {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
+  gotoThreatFramework,
   pickFirstRealOption,
   getRequiredLabels,
   fillRequiredCustomFields,

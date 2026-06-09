@@ -10,6 +10,7 @@ import {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
+  gotoThreatFramework,
   fillRequiredCustomFields,
   selectEntity,
 } from "./lib/helpers";
@@ -34,20 +35,15 @@ const STEPS = testdata.screenshotSteps;
 const COMP_STEPS = STEPS.compAction;
 const COMPONENT_ROWS = "[id^='threatframework-item-'][id$='-checkbox']";
 
-async function gotoThreatFramework(page: Page): Promise<void> {
+async function loginAndOpenFramework(page: Page): Promise<void> {
   await login(page);
   await dismissPostLoginOverlays(page);
-  await page.locator(SELECTORS.threatFrameworkLink).click();
-  await page.waitForURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
-    timeout: TIMEOUTS.navMedium,
-  });
-  await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework));
+  await gotoThreatFramework(page);
   await dismissPostLoginOverlays(page);
-  await waitForLoaderIdle(page);
 }
 
 async function createComponent(page: Page, namePrefix: string): Promise<string> {
-  await gotoThreatFramework(page);
+  await loginAndOpenFramework(page);
 
   await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
   const componentMenuItem = page.getByRole("button", { name: ROLES.buttons.component, exact: true });
@@ -143,10 +139,7 @@ test.describe("Component CRUD on Threat Framework (TypeScript)", () => {
     await dismissPostLoginOverlays(page);
     await snap(page, TF_FOLDER, STEPS.afterLogin);
 
-    await page.locator(SELECTORS.threatFrameworkLink).click();
-    await page.waitForURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
-      timeout: TIMEOUTS.navMedium,
-    });
+    await gotoThreatFramework(page);
     await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework));
     await dismissPostLoginOverlays(page);
     await waitForLoaderIdle(page);

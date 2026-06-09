@@ -9,19 +9,19 @@
     "login": "/idsvr/Account/Login",
     "threatModels": "/threatmodels",
     "threatModelsArchived": "/threatmodels/archived",
-    "threatFramework": "/threatframework"
+    "threatFramework": "/secure-design-graph"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
     "loggedIn": "\\/threatmodels(\\?|$|\\/)",
     "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}",
-    "threatFramework": "\\/threatframework"
+    "threatFramework": "\\/secure-design-graph"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
     "threatModelDiagram": "Threat Model Diagram \\| ThreatModeler",
     "threatModelsArchived": "Archived Threat Models \\| ThreatModeler",
-    "threatFramework": "Threat Framework \\| ThreatModeler"
+    "threatFramework": "Secure Design Graph \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -51,7 +51,7 @@
     "fileInput": "input[type=\"file\"]",
     "visibleOptions": "li[role=\"option\"]:visible",
     "kendoMultiselectInput": "input.k-input-inner",
-    "threatFrameworkLink": "a[aria-label=\"Threat Framework\"]",
+    "threatFrameworkLink": "a[aria-label=\"Secure Design Graph\"]",
     "archiveIcon": "i[aria-label=\"Archive\"]",
     "descriptionEditor": ".ql-editor[data-placeholder*=\"Description\"]",
     "componentNameInput": "input[placeholder=\"Component Name\"]",

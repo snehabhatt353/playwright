@@ -1,9 +1,5 @@
 import { test, expect, type Page } from "@playwright/test";
 import {
-  BASE_URL,
-  PATHS,
-  URL_PATTERNS,
-  TITLES,
   TIMEOUTS,
   SELECTORS,
   ROLES,
@@ -11,6 +7,7 @@ import {
   dismissPostLoginOverlays,
   snap,
   waitForLoaderIdle,
+  gotoThreatFramework as openThreatFramework,
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 
@@ -30,15 +27,8 @@ const HIDE_UNHIDE_BUTTON = "#threatframework-hideunhide-button";
 async function gotoThreatFramework(page: Page): Promise<void> {
   await login(page);
   await dismissPostLoginOverlays(page);
-  // Navigate directly instead of clicking the side-nav link — the link
-  // sometimes doesn't render in time after login, especially in CI.
-  await page.goto(`${BASE_URL}${PATHS.threatFramework}`);
-  await page.waitForURL(new RegExp(URL_PATTERNS.threatFramework, "i"), {
-    timeout: TIMEOUTS.navMedium,
-  });
-  await expect(page).toHaveTitle(new RegExp(TITLES.threatFramework));
+  await openThreatFramework(page);
   await dismissPostLoginOverlays(page);
-  await waitForLoaderIdle(page);
 }
 
 // The shared selectEntity helper assumes a level-2 heading inside the entity
