@@ -1,9 +1,6 @@
 name: Playwright E2E
 
 on:
-  schedule:
-    # Nightly run at 02:00 UTC
-    - cron: "0 2 * * *"
   workflow_dispatch:
     inputs:
       grep:
