@@ -62,8 +62,9 @@
     "linkUrlInput": "input[placeholder=\"Enter URL\"]",
     "resourceTypeValueInput": "input[placeholder=\"Resource Type Value\"]",
     "kendoNotification": "kendo-notification, .k-notification",
-    "componentMoreActionsTag": "#moreAction-tag-button",
-    "componentMoreActionsDelete": "#moreAction-delete-button",
+    "componentMoreActionsTag": "#threatframework-tag-button",
+    "componentMoreActionsDelete": "#threatframework-delete-button",
+    "componentMoreActionsHide": "#threatframework-hideunhide-button",
     "componentVisibilityHiddenOption": "#threatframework-visibilityhiddenstatus-button",
     "componentVisibilityVisibleOption": "#threatframework-visibilityvisiblestatus-button",
     "deleteConfirmButton": "#confirmAction-Delete-button"
@@ -94,7 +95,7 @@
       "copy": "Copy",
       "deepCopy": "Deep Copy",
       "hide": "Hide",
-      "moreActions": "More Actions",
+      "moreActions": "More actions",
       "submit": "Submit",
       "delete": "Delete",
       "visibleFilter": "Visible",
@@ -126,7 +127,7 @@
       "deleteComponents": "Delete Components"
     },
     "switches": {
-      "wingmanPattern": "Generate Threats and Security Requirements with WingMan"
+      "wingmanPattern": "Generate Threats and Security Requirements with (WingMan|AI)"
     }
   },
   "dismissButtonNames": ["Skip for Now", "Dismiss", "Skip", "Close", "Not now", "Maybe later"],

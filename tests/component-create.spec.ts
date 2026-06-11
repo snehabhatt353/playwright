@@ -288,7 +288,9 @@ test.describe("Component CRUD on Threat Framework (TypeScript)", () => {
     await searchAndSelectFirstRow(page, name);
     await snap(page, FOLDERS.compHide, COMP_STEPS.rowSelected);
 
-    await page.getByRole("button", { name: ROLES.buttons.hide, exact: true }).click();
+    // Hide is no longer a top-level toolbar button — it lives inside the
+    // More actions menu alongside Add tag / Delete.
+    await clickMoreActionsItem(page, SELECTORS.componentMoreActionsHide);
     const dialog = page.getByRole("dialog", { name: ROLES.dialogs.hideRecord });
     await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
     await snap(page, FOLDERS.compHide, COMP_STEPS.dialogOpen);

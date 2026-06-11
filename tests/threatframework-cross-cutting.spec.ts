@@ -21,8 +21,10 @@ const ENTITY_TRIGGER = "#threatframework-entitytitle-button";
 const entityOption = (label: string) =>
   `[id="threatframework-displayname-${label}-dropdowntoggle"]`;
 // Bulk-friendly toolbar action — enables once any row is selected (Edit
-// stays disabled in multi-select because it's a single-entity action).
-const HIDE_UNHIDE_BUTTON = "#threatframework-hideunhide-button";
+// stays disabled in multi-select because it's a single-entity action;
+// Hide moved into the More actions menu, so use Copy/Clone as the
+// always-visible bulk indicator).
+const BULK_ACTION_BUTTON = "#threatframework-clone-button";
 
 async function gotoThreatFramework(page: Page): Promise<void> {
   await login(page);
@@ -129,13 +131,13 @@ test.describe("Threat Framework cross-cutting flows", () => {
     // The Edit button has id `editEntities-button` but stays disabled in
     // multi-select (Edit is a single-row action). Assert against a bulk
     // action — Hide is enabled whenever ≥1 row is selected.
-    await expect(page.locator(HIDE_UNHIDE_BUTTON)).toBeEnabled({
+    await expect(page.locator(BULK_ACTION_BUTTON)).toBeEnabled({
       timeout: TIMEOUTS.buttonEnabled,
     });
     await snap(page, FOLDER, "select-all-on");
 
     await selectAll.evaluate((el: HTMLInputElement) => el.click());
-    await expect(page.locator(HIDE_UNHIDE_BUTTON)).toBeDisabled({
+    await expect(page.locator(BULK_ACTION_BUTTON)).toBeDisabled({
       timeout: TIMEOUTS.buttonEnabled,
     });
   });
