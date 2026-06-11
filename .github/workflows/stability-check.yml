@@ -1,15 +1,10 @@
-name: Nightly Stability
+name: Stability Check
 
 # Runs the full Playwright suite three times in parallel via a matrix and
-# fails if any of the three attempts fail. Catches flakes that the regular
-# nightly (.github/workflows/playwright.yml) can't see because it runs the
-# suite only once.
+# fails if any of the three attempts fail. Manual-trigger only — kick it
+# off from the Actions tab when you want a flake-detection sweep.
 
 on:
-  schedule:
-    # Daily at 03:00 UTC — one hour after the standard nightly run so the
-    # two don't contend for tmdev resources.
-    - cron: "0 3 * * *"
   workflow_dispatch:
     inputs:
       workers:
