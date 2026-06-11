@@ -1,0 +1,91 @@
+name: Nightly Stability
+
+# Runs the full Playwright suite three times in parallel via a matrix and
+# fails if any of the three attempts fail. Catches flakes that the regular
+# nightly (.github/workflows/playwright.yml) can't see because it runs the
+# suite only once.
+
+on:
+  schedule:
+    # Daily at 03:00 UTC — one hour after the standard nightly run so the
+    # two don't contend for tmdev resources.
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      workers:
+        description: "Number of parallel workers per run"
+        required: false
+        default: "1"
+
+concurrency:
+  group: nightly-stability
+  cancel-in-progress: false
+
+jobs:
+  stability:
+    name: Stability attempt ${{ matrix.run }}/3
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      TM_USER: ${{ secrets.TM_USER }}
+      TM_PASS: ${{ secrets.TM_PASS }}
+      TM_BASE_URL: ${{ secrets.TM_BASE_URL }}
+
+    strategy:
+      # All three attempts run to completion even if one fails — that's the
+      # whole point of a stability check.
+      fail-fast: false
+      matrix:
+        run: [1, 2, 3]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+
+      - name: Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps (cache hit path)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
+
+      - name: Type-check
+        run: npx tsc --noEmit
+
+      - name: Run Playwright tests
+        run: npx playwright test --workers=${{ inputs.workers || '1' }}
+
+      - name: Upload HTML report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-run-${{ matrix.run }}
+          path: playwright-report/
+          retention-days: 14
+
+      - name: Upload traces and screenshots on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failures-run-${{ matrix.run }}
+          path: |
+            test-results/
+            screenshots/
+          retention-days: 14
