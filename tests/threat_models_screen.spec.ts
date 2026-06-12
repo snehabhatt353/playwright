@@ -104,4 +104,72 @@ test.describe("Threat Models screen", () => {
     await expect(cells.nth(3)).toContainText(UPDATED.risk);
     await expect(cells.nth(4)).toContainText(UPDATED.status);
   });
+
+  test("C13577-Do some changes on diagram and Check modified date get updated on home screen", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh threat model so we know exactly which row to assert on.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `DiagramEditTM-${Date.now()}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+
+    // 2. Snapshot the home-grid Modified text before the diagram edit.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    await waitForLoaderIdle(page);
+    const initialRow = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(initialRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    const initialModified = ((await initialRow.locator("td[role='gridcell']").nth(6).textContent()) || "").trim();
+    expect(initialModified).toMatch(/Today/);
+
+    // 3. Re-open the diagram by clicking the model name in the row.
+    await initialRow.getByRole("button", { name: modelName, exact: true }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await waitForLoaderIdle(page);
+
+    // 4. The diagram's project-name button opens the "Model Info" kendo
+    //    dialog (portal-mounted). Updating Version + Save is a clean
+    //    model-level diagram change.
+    await page.locator(".project-name-btn").click();
+    const modelInfo = page.getByRole("dialog", { name: "Model Info" });
+    await expect(modelInfo).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    const versionInput = modelInfo.locator('input[placeholder="Version"]').first();
+    await expect(versionInput).toBeVisible();
+    await versionInput.fill(TM.version.updated);
+
+    await modelInfo.getByRole("button", { name: ROLES.buttons.save, exact: true }).click();
+    await expect(modelInfo).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+    await waitForLoaderIdle(page);
+
+    // 5. Back on the home grid, the row should show the new version, sit at
+    //    the top of the Modified-DESC list, and have a "Today …" timestamp.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    await waitForLoaderIdle(page);
+
+    const updatedRow = page
+      .getByRole("row", {
+        name: new RegExp(`${modelName}\\s+${TM.version.updated.replace(".", "\\.")}`),
+      })
+      .first();
+    await expect(updatedRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+
+    const updatedModified = ((await updatedRow.locator("td[role='gridcell']").nth(6).textContent()) || "").trim();
+    expect(updatedModified).toMatch(/Today/);
+
+    const firstDataRowName = ((await page.getByRole("row").nth(1).locator("td[role='gridcell']").nth(1).textContent()) || "").trim();
+    expect(firstDataRowName).toContain(modelName);
+  });
 });
