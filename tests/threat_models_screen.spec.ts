@@ -381,4 +381,108 @@ test.describe("Threat Models screen", () => {
       }
     }
   });
+
+  test("C13582-Check if added/edited collaborators list from diagram get updated on Home Screen and Vise Versa", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh TM. The creator becomes the sole Project Admin
+    //    collaborator under the Users tab, giving us a known baseline.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `CollabTM-${Date.now()}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await dismissPostLoginOverlays(page);
+
+    // The "Manage Collaborators" dialog (`kendo-dialog.share-model-members`)
+    // is shared between the diagram's Share button
+    // (`#diagram-shareModal-button`) and the home inline panel's Manage
+    // Collaborators button (`#collab-share-btn`). Same dialog, same flow:
+    // search, click suggestion, Save, wait for it to close.
+    const addCollaborator = async (searchTerm: string, fullName: string) => {
+      const dialog = page.locator("kendo-dialog.share-model-members");
+      await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+      await dialog.locator("#shareModel-searchUserOrGroup-input").fill(searchTerm);
+      const option = dialog
+        .locator(".mm-dropdown-option")
+        .filter({ hasText: fullName })
+        .first();
+      await expect(option).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+      await option.click();
+      await dialog.getByRole("button", { name: ROLES.buttons.save, exact: true }).click();
+      await expect(dialog).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+    };
+
+    // 2. DIAGRAM → HOME: add a collaborator from the diagram's Share button,
+    //    then verify it surfaces on the home-screen inline Collaborators
+    //    card (`#tour-collabrator`).
+    const userFromDiagram = "Aashna Badli";
+    await page.locator("#diagram-shareModal-button").click();
+    await addCollaborator("Aashna", userFromDiagram);
+
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    // Same overlay churn that hits C13580 / C13581 — strip lingering
+    // loaders + release-notes before the expand-details click.
+    await page.evaluate(() => {
+      document
+        .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+        .forEach((el) => el.remove());
+      document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+        const h = el as HTMLElement;
+        h.style.display = "none";
+        h.style.pointerEvents = "none";
+      });
+    });
+    await row.getByRole("button", { name: ROLES.buttons.expandDetails }).click();
+
+    const inlineCollabCard = page.locator("#tour-collabrator");
+    await expect(inlineCollabCard).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    // The Users tab is active by default; the new collaborator should render
+    // as `.collab-row .collab-name`.
+    await expect(
+      inlineCollabCard.locator(".collab-row .collab-name").filter({ hasText: userFromDiagram }),
+    ).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+
+    // 3. HOME → DIAGRAM: add a second collaborator from the inline panel's
+    //    Manage Collaborators button, then verify both users surface back
+    //    in the diagram's Share dialog.
+    const userFromHome = "Fraser Scott";
+    await inlineCollabCard.locator("#collab-share-btn").click();
+    await addCollaborator("Fraser", userFromHome);
+
+    // Re-open the diagram via the master row's model-name button (same
+    // pattern as C13577). Re-fetch the row — the modified-DESC sort can
+    // re-position it.
+    const refreshedRow = page
+      .getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) })
+      .first();
+    await refreshedRow.getByRole("button", { name: modelName, exact: true }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await dismissPostLoginOverlays(page);
+
+    await page.locator("#diagram-shareModal-button").click();
+    const dialog = page.locator("kendo-dialog.share-model-members");
+    await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    // The dialog renders each added user with a `Remove {Name}` action
+    // button (the inline panel's `.collab-row .collab-name` structure
+    // doesn't apply here). That button is the most reliable presence check.
+    for (const name of [userFromDiagram, userFromHome]) {
+      await expect(
+        dialog.getByRole("button", { name: `Remove ${name}` }),
+      ).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    }
+  });
 });
