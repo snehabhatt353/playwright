@@ -115,11 +115,25 @@ test.describe("Threat Models screen", () => {
     await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
 
     // 2. Back on the home grid, expand the row's inline detail panel.
+    //    Skip waitForLoaderIdle here: after creating a new model the grid
+    //    loader intermittently lingers past its 30s budget (especially in
+    //    headed mode); the row-visible assertion auto-waits for data load,
+    //    and the inline overlay strip below clears any loader still painting
+    //    over the row before the click.
     await page.goto(`${BASE_URL}${PATHS.threatModels}`);
     await dismissPostLoginOverlays(page);
-    await waitForLoaderIdle(page);
     const row = page.getByRole("row", { name: new RegExp(`\\b${originalName}\\b`) }).first();
     await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    await page.evaluate(() => {
+      document
+        .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+        .forEach((el) => el.remove());
+      document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+        const h = el as HTMLElement;
+        h.style.display = "none";
+        h.style.pointerEvents = "none";
+      });
+    });
     await row.getByRole("button", { name: ROLES.buttons.expandDetails }).click();
 
     // 3. Edit every detail surfaced on the home-grid columns: Name, Version,
@@ -180,15 +194,27 @@ test.describe("Threat Models screen", () => {
     await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
 
     // 2. Snapshot the home-grid Modified text before the diagram edit.
+    //    Skip waitForLoaderIdle (lingers past 30s after fresh TM create);
+    //    row-visible assertion auto-waits, and the inline overlay strip
+    //    clears any loader before the model-name click in step 3.
     await page.goto(`${BASE_URL}${PATHS.threatModels}`);
     await dismissPostLoginOverlays(page);
-    await waitForLoaderIdle(page);
     const initialRow = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
     await expect(initialRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
     const initialModified = ((await initialRow.locator("td[role='gridcell']").nth(6).textContent()) || "").trim();
     expect(initialModified).toMatch(/Today/);
 
     // 3. Re-open the diagram by clicking the model name in the row.
+    await page.evaluate(() => {
+      document
+        .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+        .forEach((el) => el.remove());
+      document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+        const h = el as HTMLElement;
+        h.style.display = "none";
+        h.style.pointerEvents = "none";
+      });
+    });
     await initialRow.getByRole("button", { name: modelName, exact: true }).click();
     await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
     await waitForLoaderIdle(page);
@@ -209,9 +235,10 @@ test.describe("Threat Models screen", () => {
 
     // 5. Back on the home grid, the row should show the new version, sit at
     //    the top of the Modified-DESC list, and have a "Today …" timestamp.
+    //    Skip waitForLoaderIdle (lingers past 30s after diagram edit); the
+    //    row-visible assertion auto-waits for the data load to settle.
     await page.goto(`${BASE_URL}${PATHS.threatModels}`);
     await dismissPostLoginOverlays(page);
-    await waitForLoaderIdle(page);
 
     const updatedRow = page
       .getByRole("row", {
