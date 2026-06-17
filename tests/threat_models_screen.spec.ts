@@ -36,6 +36,60 @@ const UPDATED = {
   status: "Review",
 };
 
+// Opens the Version column's kendo column-menu, expands the Columns picker,
+// turns on "Created" if it's not already on, and Applies. Returns a header→
+// cell-index map so callers can target columns by name (cell index = header
+// index + 1, because cell 0 is the row-expander/select cell).
+async function enableCreatedColumn(page: Page): Promise<Record<string, number>> {
+  const headerMap = async (): Promise<Record<string, number>> =>
+    page.evaluate(() => {
+      const map: Record<string, number> = {};
+      Array.from(document.querySelectorAll('th[role="columnheader"]')).forEach((h, idx) => {
+        const text = (h.textContent || "").trim();
+        if (text) map[text] = idx + 1;
+      });
+      return map;
+    });
+
+  if ("Created" in (await headerMap())) return headerMap();
+
+  // Force-hide any lingering loader overlay so it doesn't intercept clicks.
+  await page.evaluate(() => {
+    document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+      const h = el as HTMLElement;
+      h.style.display = "none";
+      h.style.pointerEvents = "none";
+    });
+  });
+
+  // The Filter Column dialog opens via a kendo anchor inside any header.
+  // A direct DOM .click() reliably triggers the kendo handler even when
+  // Playwright's pointer-event click would be intercepted.
+  await page.evaluate(() => {
+    const versionHeader = Array.from(
+      document.querySelectorAll('th[role="columnheader"]'),
+    ).find((h) => (h.textContent || "").trim() === "Version");
+    if (!versionHeader) throw new Error("Version column header not found");
+    const anchor = versionHeader.querySelector("a.k-grid-column-menu") as HTMLElement | null;
+    if (!anchor) throw new Error("column-menu anchor not found");
+    anchor.click();
+  });
+
+  const menu = page.getByRole("dialog", { name: "Filter Column" });
+  await expect(menu).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+  await menu.getByRole("button", { name: "Columns", exact: true }).click({ force: true });
+  await menu
+    .locator("label")
+    .filter({ hasText: /^Created$/ })
+    .first()
+    .click({ force: true });
+  await menu.getByRole("button", { name: "Apply", exact: true }).click({ force: true });
+  await expect.poll(async () => "Created" in (await headerMap()), {
+    timeout: TIMEOUTS.rowVisible,
+  }).toBe(true);
+  return headerMap();
+}
+
 test.describe("Threat Models screen", () => {
   test.setTimeout(TIMEOUTS.test);
 
@@ -171,5 +225,160 @@ test.describe("Threat Models screen", () => {
 
     const firstDataRowName = ((await page.getByRole("row").nth(1).locator("td[role='gridcell']").nth(1).textContent()) || "").trim();
     expect(firstDataRowName).toContain(modelName);
+  });
+
+  test("C13581-Create new Threat model and Check Model Name, Version, Risk, Project Status, Author, Modified, Created and Description show correct on home screen", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh threat model with a known name, version, and
+    //    description so we can assert each column / detail value precisely.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `HomeColsTM-${Date.now()}`;
+    const description = `auto-description-${Date.now()}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    const descriptionEditor = createDialog.locator('.ql-editor[data-placeholder*="Description"]').first();
+    await descriptionEditor.click();
+    await descriptionEditor.pressSequentially(description, { delay: 10 });
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+
+    // 2. Return to the home grid for column assertions. We deliberately skip
+    //    waitForLoaderIdle here: after creating a new model the grid loader
+    //    intermittently lingers past its 30s budget, but dismissPostLoginOverlays
+    //    has already force-hidden the overlay element, and the row-visible
+    //    assertion below auto-waits for the data load to settle.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+
+    // 3. Locate the new row. Cell index 0 is the row-expander/select cell.
+    //    Once the row is visible the grid headers are mounted, which is the
+    //    prerequisite for opening the column-menu in the next step.
+    const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+
+    // 4. "Created" isn't a default-visible column. Toggle it on through any
+    //    header's column-menu Columns picker so we can assert it alongside
+    //    Modified. The kendo grid's loader overlay intermittently intercepts
+    //    pointer events even after the data has loaded, so we drive the
+    //    column menu via direct DOM clicks and force-clicks.
+    const columnIndex = await enableCreatedColumn(page);
+
+    // 5. Each visible column should reflect what we entered (Name, Version)
+    //    or the documented create-time defaults (Risk = Medium, Status =
+    //    In Progress). Author / Modified / Created are filled by the server.
+    const cells = row.locator("td[role='gridcell']");
+    await expect(cells.nth(columnIndex.Name)).toContainText(modelName);
+    await expect(cells.nth(columnIndex.Version)).toContainText(TM.version.initial);
+    await expect(cells.nth(columnIndex.Risk)).toContainText("Medium");
+    await expect(cells.nth(columnIndex.Status)).toContainText("In Progress");
+    expect(((await cells.nth(columnIndex.Author).textContent()) || "").trim()).not.toBe("");
+    await expect(cells.nth(columnIndex.Modified)).toContainText(/Today/);
+    await expect(cells.nth(columnIndex.Created)).toContainText(/Today/);
+
+    // 6. Description isn't on the grid — it lives in the inline detail panel
+    //    as a Quill editor that mirrors the create-dialog field. The
+    //    tm-release-note overlay can re-mount asynchronously after the
+    //    column-menu interaction above, so re-dismiss before clicking.
+    await dismissPostLoginOverlays(page);
+    await row.getByRole("button", { name: ROLES.buttons.expandDetails }).click();
+    const descPanel = page.locator('.ql-editor[data-placeholder*="Description"]').first();
+    await expect(descPanel).toContainText(description, { timeout: TIMEOUTS.elementVisible });
+  });
+
+  test("C13580-Change the project status to (In Progress, Review, Starting, Started, Work In Prog) and Check Project status column changed or not", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh TM (defaults to "In Progress").
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `StatusCycleTM-${Date.now()}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+
+    // 2. Move to the home grid for inline editing. Skip waitForLoaderIdle:
+    //    after creating a new model the grid loader intermittently lingers
+    //    past its 30s budget; the row-visible assertion inside the loop
+    //    auto-waits for the data load, and the in-loop force-hide handles
+    //    any overlay that re-mounts.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+
+    // 3. Cycle the Project Status through each settable value and verify the
+    //    Status column (cell index 4) updates after every save. Note: the
+    //    approval-workflow states (Pending Approval / Approved / Denied)
+    //    aren't direct picks on this dropdown — they're set via the diagram
+    //    page's Approval Workflow action.
+    const STATUSES = ["In Progress", "Review", "Starting", "Started", "Work In Prog"];
+    for (const status of STATUSES) {
+      const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+      await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+
+      // New TMs default to "In Progress"; re-selecting the same value leaves
+      // the form pristine so Save stays disabled. Skip no-op iterations.
+      const currentStatus = ((await row.locator("td[role='gridcell']").nth(4).textContent()) || "").trim();
+      if (currentStatus === status) continue;
+
+      // Two overlays can intercept the next expand click: the grid's
+      // tm-loader (re-fires after each save and lingers past
+      // waitForLoaderIdle), and a tm-release-note k-overlay that re-mounts
+      // asynchronously. Force-remove/hide both inline — calling the full
+      // dismissPostLoginOverlays helper per iteration is too slow.
+      await page.evaluate(() => {
+        document
+          .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+          .forEach((el) => el.remove());
+        document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+          const h = el as HTMLElement;
+          h.style.display = "none";
+          h.style.pointerEvents = "none";
+        });
+      });
+
+      await row.getByRole("button", { name: ROLES.buttons.expandDetails }).click();
+
+      await page.locator('kendo-dropdownlist[aria-label="Select Project Status"]').first().click();
+      await page.getByRole("option", { name: status, exact: true }).first().click();
+
+      const saveBtn = page.getByRole("button", { name: ROLES.buttons.save, exact: true });
+      await expect(saveBtn).toBeEnabled({ timeout: TIMEOUTS.buttonEnabled });
+      await saveBtn.click();
+      await waitForLoaderIdle(page);
+
+      // Re-fetch the row: the Modified-DESC sort can re-position it, leaving
+      // the prior reference stale.
+      const refreshedRow = page
+        .getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) })
+        .first();
+      await expect(refreshedRow.locator("td[role='gridcell']").nth(4)).toContainText(status, {
+        timeout: TIMEOUTS.rowVisible,
+      });
+
+      // Save leaves the inline panel expanded; collapse so the next iteration
+      // finds a fresh "Expand Details" toggle.
+      const collapseBtn = refreshedRow.getByRole("button", { name: "Collapse Details" });
+      if (await collapseBtn.isVisible().catch(() => false)) {
+        await collapseBtn.click();
+      }
+    }
   });
 });
