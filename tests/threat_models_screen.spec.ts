@@ -507,4 +507,103 @@ test.describe("Threat Models screen", () => {
       ).toBeVisible({ timeout: TIMEOUTS.elementVisible });
     }
   });
+
+  test("C13590-Check if search works for models name, tags, versions, members and risks", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh TM. Its modelName + tag + collaborator are unique,
+    //    so a positive match on any of those criteria pinpoints exactly the
+    //    row we just created. Version (1.0) and Risk (Medium) are shared
+    //    with many existing rows — we assert presence-in-results instead of
+    //    a count.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const ts = Date.now();
+    const modelName = `${TM.namePrefixes.search}-${ts}`;
+    const tagName = `${TM.search.tagPrefix}-${ts}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+    await dismissPostLoginOverlays(page);
+
+    // 2. Back on the home grid, expand the row's inline detail panel. Same
+    //    overlay churn as C13580 / C13581.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+    const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    await page.evaluate(() => {
+      document
+        .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+        .forEach((el) => el.remove());
+      document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+        const h = el as HTMLElement;
+        h.style.display = "none";
+        h.style.pointerEvents = "none";
+      });
+    });
+    await row.getByRole("button", { name: ROLES.buttons.expandDetails }).click();
+
+    // 3. Add a unique tag via the kendo-multiselect. Typing a non-existent
+    //    value surfaces an "Add custom value" entry rendered as
+    //    `.k-list-custom-value` — clicking that commits the new tag.
+    const tagInput = page.locator('input[placeholder="Search tags"]').first();
+    await tagInput.click();
+    await tagInput.fill(tagName);
+    await page.locator(".k-list-custom-value").filter({ hasText: tagName }).first().click();
+
+    // 4. Add a collaborator via the inline panel's Manage Collaborators
+    //    button (members-search relies on a non-author user being on the
+    //    model).
+    const memberName = TM.collaborators.fromHome.fullName;
+    await page.locator("#collab-share-btn").click();
+    const memberDialog = page.locator("kendo-dialog.share-model-members");
+    await expect(memberDialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    await memberDialog
+      .locator("#shareModel-searchUserOrGroup-input")
+      .fill(TM.collaborators.fromHome.searchTerm);
+    await memberDialog
+      .locator(".mm-dropdown-option")
+      .filter({ hasText: memberName })
+      .first()
+      .click();
+    await memberDialog.getByRole("button", { name: ROLES.buttons.save, exact: true }).click();
+    await expect(memberDialog).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+
+    // 5. Save the inline panel to persist the tag.
+    const saveBtn = page.getByRole("button", { name: ROLES.buttons.save, exact: true });
+    await expect(saveBtn).toBeEnabled({ timeout: TIMEOUTS.buttonEnabled });
+    await saveBtn.click();
+    await waitForLoaderIdle(page).catch(() => {});
+
+    // 6. Exercise the home-screen search against each criterion. The search
+    //    input is `#tmMain-searchModel-input` (aria says "name, version,
+    //    tags, risk or author" — author also matches collaborators). For
+    //    each criterion, type the value, wait for the debounce, and assert
+    //    our freshly-created row surfaces.
+    const search = page.locator("#tmMain-searchModel-input");
+    const targetRow = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    const criteria: { label: string; term: string }[] = [
+      { label: "name", term: modelName },
+      { label: "version", term: TM.version.initial },
+      { label: "tag", term: tagName },
+      { label: "risk", term: TM.defaults.risk },
+      { label: "member", term: memberName },
+    ];
+    for (const { term } of criteria) {
+      await search.fill("");
+      await search.fill(term);
+      await page.waitForTimeout(TM.search.debounceMs);
+      await expect(targetRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+    }
+  });
 });

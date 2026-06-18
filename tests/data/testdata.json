@@ -247,7 +247,12 @@
       "diagramEdit": "DiagramEditTM",
       "homeCols": "HomeColsTM",
       "statusCycle": "StatusCycleTM",
-      "collab": "CollabTM"
+      "collab": "CollabTM",
+      "search": "SearchTM"
+    },
+    "search": {
+      "tagPrefix": "auto-search-tag",
+      "debounceMs": 1500
     },
     "version": {
       "initial": "1.0",
