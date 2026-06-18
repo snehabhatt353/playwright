@@ -27,14 +27,10 @@ const TM = testdata.threatModel;
 const TM_FIELDS: FieldConfig = TM.fields as FieldConfig;
 const DIAGRAM_URL = new RegExp(URL_PATTERNS.threatModelDiagram, "i");
 
-// Target values for each editable detail visible on the home-screen grid.
-// Defaults at creation: Risk = Medium, Status = In Progress, Version = 1.0.
-const UPDATED = {
-  nameSuffix: "-Updated",
-  version: "2.0",
-  risk: "High",
-  status: "Review",
-};
+// Target values for each editable detail visible on the home-screen grid
+// (defined in testdata.threatModel.edit; defaults are
+// testdata.threatModel.defaults).
+const UPDATED = TM.edit;
 
 // Opens the Version column's kendo column-menu, expands the Columns picker,
 // turns on "Created" if it's not already on, and Applies. Returns a header→
@@ -107,7 +103,7 @@ test.describe("Threat Models screen", () => {
     await expect(createDialog).toBeVisible();
     await dismissOnboardingIfShown(page);
 
-    const originalName = `EditAllTM-${Date.now()}`;
+    const originalName = `${TM.namePrefixes.editAll}-${Date.now()}`;
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(originalName);
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
     await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
@@ -186,7 +182,7 @@ test.describe("Threat Models screen", () => {
     await expect(createDialog).toBeVisible();
     await dismissOnboardingIfShown(page);
 
-    const modelName = `DiagramEditTM-${Date.now()}`;
+    const modelName = `${TM.namePrefixes.diagramEdit}-${Date.now()}`;
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
     await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
@@ -268,8 +264,8 @@ test.describe("Threat Models screen", () => {
     await expect(createDialog).toBeVisible();
     await dismissOnboardingIfShown(page);
 
-    const modelName = `HomeColsTM-${Date.now()}`;
-    const description = `auto-description-${Date.now()}`;
+    const modelName = `${TM.namePrefixes.homeCols}-${Date.now()}`;
+    const description = `${TM.descriptionPrefix}-${Date.now()}`;
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
     const descriptionEditor = createDialog.locator('.ql-editor[data-placeholder*="Description"]').first();
@@ -306,8 +302,8 @@ test.describe("Threat Models screen", () => {
     const cells = row.locator("td[role='gridcell']");
     await expect(cells.nth(columnIndex.Name)).toContainText(modelName);
     await expect(cells.nth(columnIndex.Version)).toContainText(TM.version.initial);
-    await expect(cells.nth(columnIndex.Risk)).toContainText("Medium");
-    await expect(cells.nth(columnIndex.Status)).toContainText("In Progress");
+    await expect(cells.nth(columnIndex.Risk)).toContainText(TM.defaults.risk);
+    await expect(cells.nth(columnIndex.Status)).toContainText(TM.defaults.status);
     expect(((await cells.nth(columnIndex.Author).textContent()) || "").trim()).not.toBe("");
     await expect(cells.nth(columnIndex.Modified)).toContainText(/Today/);
     await expect(cells.nth(columnIndex.Created)).toContainText(/Today/);
@@ -335,7 +331,7 @@ test.describe("Threat Models screen", () => {
     await expect(createDialog).toBeVisible();
     await dismissOnboardingIfShown(page);
 
-    const modelName = `StatusCycleTM-${Date.now()}`;
+    const modelName = `${TM.namePrefixes.statusCycle}-${Date.now()}`;
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
     await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
@@ -355,8 +351,7 @@ test.describe("Threat Models screen", () => {
     //    approval-workflow states (Pending Approval / Approved / Denied)
     //    aren't direct picks on this dropdown — they're set via the diagram
     //    page's Approval Workflow action.
-    const STATUSES = ["In Progress", "Review", "Starting", "Started", "Work In Prog"];
-    for (const status of STATUSES) {
+    for (const status of TM.statusCycle) {
       const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
       await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
 
@@ -423,7 +418,7 @@ test.describe("Threat Models screen", () => {
     await expect(createDialog).toBeVisible();
     await dismissOnboardingIfShown(page);
 
-    const modelName = `CollabTM-${Date.now()}`;
+    const modelName = `${TM.namePrefixes.collab}-${Date.now()}`;
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
     await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
     await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
@@ -453,9 +448,9 @@ test.describe("Threat Models screen", () => {
     // 2. DIAGRAM → HOME: add a collaborator from the diagram's Share button,
     //    then verify it surfaces on the home-screen inline Collaborators
     //    card (`#tour-collabrator`).
-    const userFromDiagram = "Aashna Badli";
+    const userFromDiagram = TM.collaborators.fromDiagram.fullName;
     await page.locator("#diagram-shareModal-button").click();
-    await addCollaborator("Aashna", userFromDiagram);
+    await addCollaborator(TM.collaborators.fromDiagram.searchTerm, userFromDiagram);
 
     await page.goto(`${BASE_URL}${PATHS.threatModels}`);
     await dismissPostLoginOverlays(page);
@@ -486,9 +481,9 @@ test.describe("Threat Models screen", () => {
     // 3. HOME → DIAGRAM: add a second collaborator from the inline panel's
     //    Manage Collaborators button, then verify both users surface back
     //    in the diagram's Share dialog.
-    const userFromHome = "Fraser Scott";
+    const userFromHome = TM.collaborators.fromHome.fullName;
     await inlineCollabCard.locator("#collab-share-btn").click();
-    await addCollaborator("Fraser", userFromHome);
+    await addCollaborator(TM.collaborators.fromHome.searchTerm, userFromHome);
 
     // Re-open the diagram via the master row's model-name button (same
     // pattern as C13577). Re-fetch the row — the modified-DESC sort can

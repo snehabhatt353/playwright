@@ -242,11 +242,32 @@
       "create": "AutoTM",
       "edit": "EditTM",
       "archive": "DeleteTM",
-      "modify": "ModifyTM"
+      "modify": "ModifyTM",
+      "editAll": "EditAllTM",
+      "diagramEdit": "DiagramEditTM",
+      "homeCols": "HomeColsTM",
+      "statusCycle": "StatusCycleTM",
+      "collab": "CollabTM"
     },
     "version": {
       "initial": "1.0",
       "updated": "2.0"
+    },
+    "descriptionPrefix": "auto-description",
+    "defaults": {
+      "risk": "Medium",
+      "status": "In Progress"
+    },
+    "edit": {
+      "nameSuffix": "-Updated",
+      "version": "2.0",
+      "risk": "High",
+      "status": "Review"
+    },
+    "statusCycle": ["In Progress", "Review", "Starting", "Started", "Work In Prog"],
+    "collaborators": {
+      "fromDiagram": { "searchTerm": "Aashna", "fullName": "Aashna Badli" },
+      "fromHome": { "searchTerm": "Fraser", "fullName": "Fraser Scott" }
     },
     "fields": {
       "textboxes": [
