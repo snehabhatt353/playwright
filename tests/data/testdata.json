@@ -248,7 +248,8 @@
       "homeCols": "HomeColsTM",
       "statusCycle": "StatusCycleTM",
       "collab": "CollabTM",
-      "search": "SearchTM"
+      "search": "SearchTM",
+      "archiveEnable": "ArchiveEnableTM"
     },
     "search": {
       "tagPrefix": "auto-search-tag",

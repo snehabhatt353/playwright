@@ -606,4 +606,59 @@ test.describe("Threat Models screen", () => {
       await expect(targetRow).toBeVisible({ timeout: TIMEOUTS.rowVisible });
     }
   });
+
+  test("C13605-Select a TM checkbox and check if archive enables", async ({ page }: { page: Page }) => {
+    await login(page);
+    await dismissPostLoginOverlays(page);
+
+    // 1. Create a fresh TM so we know exactly which row to select.
+    await page.getByRole("button", { name: ROLES.buttons.createNewMenu }).click();
+    await page.getByRole("menuitem", { name: new RegExp(ROLES.menuItems.threatModel) }).click();
+    const createDialog: Locator = page.getByRole("dialog", {
+      name: ROLES.dialogs.createThreatModel,
+    });
+    await expect(createDialog).toBeVisible();
+    await dismissOnboardingIfShown(page);
+
+    const modelName = `${TM.namePrefixes.archiveEnable}-${Date.now()}`;
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.modelName }).fill(modelName);
+    await createDialog.getByRole("textbox", { name: ROLES.textboxes.version }).fill(TM.version.initial);
+    await fillRequiredCustomFields(page, createDialog, TM_FIELDS);
+    await page.getByRole("button", { name: ROLES.buttons.createNewModel }).click();
+    await page.waitForURL(DIAGRAM_URL, { timeout: TIMEOUTS.navLong });
+
+    // 2. Return to the home grid. The Archive bulk-action icon is mounted
+    //    into the DOM only after at least one row is selected, so before
+    //    selection it has zero matches — that's the "disabled" baseline.
+    await page.goto(`${BASE_URL}${PATHS.threatModels}`);
+    await dismissPostLoginOverlays(page);
+
+    const row = page.getByRole("row", { name: new RegExp(`\\b${modelName}\\b`) }).first();
+    await expect(row).toBeVisible({ timeout: TIMEOUTS.rowVisible });
+
+    const archiveIcon = page.locator('i[aria-label="Archive"]');
+    await expect(archiveIcon).toHaveCount(0);
+
+    // 3. Strip lingering loader / release-note overlays so the checkbox
+    //    click isn't intercepted (same pattern as C13580 / C13581).
+    await page.evaluate(() => {
+      document
+        .querySelectorAll("tm-release-note, .k-overlay, .tour-backdrop, ngx-guided-tour")
+        .forEach((el) => el.remove());
+      document.querySelectorAll("tm-loader .overlay").forEach((el) => {
+        const h = el as HTMLElement;
+        h.style.display = "none";
+        h.style.pointerEvents = "none";
+      });
+    });
+
+    // 4. Tick the row's Select Row checkbox. The kendo-styled checkbox is
+    //    an <input type="checkbox"> with aria-label="Select Row"; click via
+    //    force to bypass the kendo overlay wrapper.
+    await row.getByRole("checkbox", { name: ROLES.buttons.selectRow }).check({ force: true });
+
+    // 5. Archive icon mounts with aria-disabled="false" — i.e. enabled.
+    await expect(archiveIcon).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    await expect(archiveIcon).toHaveAttribute("aria-disabled", "false");
+  });
 });
