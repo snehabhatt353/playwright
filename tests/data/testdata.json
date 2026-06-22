@@ -363,6 +363,42 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "complianceSummary": {
+    "heading": "Compliance Summary",
+    "filterTitle": "Compliance Framework",
+    "statusLegends": {
+      "compliant": "Сompliant",
+      "nonCompliant": "Non-Сompliant",
+      "partiallyCompliant": "Partially Сompliant"
+    },
+    "noDataText": "No Data Available",
+    "searchSamples": {
+      "partial": "NIST",
+      "noMatch": "ZZZZ-no-such-framework"
+    },
+    "selectors": {
+      "card": "div.tm-dashboard-card-bottom",
+      "heading": "#dashboard-complianceSummary-div",
+      "filterButton": "button#dashboard-complianceSummary-button",
+      "filterDialog": "#filter[role=\"dialog\"]",
+      "filterTitle": "#dashboard-complianceFramework-span",
+      "filterSearch": "#dashboard-complianceSearch-text",
+      "filterList": "ul.tf-components-inner-container",
+      "filterItem": "li.tf-components-values",
+      "filterItemLabel": "li.tf-components-values div.my-auto",
+      "filterItemCheckbox": "li.tf-components-values input[type=\"checkbox\"]",
+      "applyButton": "button#dashboard-complianceSummaryApply-button",
+      "clearButton": "button#dashboard-complianceSummaryClear-button",
+      "compliantCount": "#dashboard-overCompliance-div",
+      "nonCompliantCount": "#dashboard-overComplianceNon-div",
+      "partialCount": "#dashboard-overCompliancePartially-div",
+      "compliantLegend": "#dashboard-compliant-div",
+      "nonCompliantLegend": "#dashboard-nonCompliant-div",
+      "partialLegend": "#dashboard-partially-div",
+      "accordion": ".accordion-container",
+      "noDataRow": ".compliance .text-center"
+    }
+  },
   "customFieldDefaults": {
     "textValue": "auto-text",
     "numberValue": "42",
