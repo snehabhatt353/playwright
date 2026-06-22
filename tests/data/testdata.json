@@ -363,6 +363,38 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "dashboardFilter": {
+    "sidebarHeading": "Filter",
+    "fieldLabels": ["Start Date", "End Date", "Department", "Model Status", "Model Type", "Tags", "Threat Models"],
+    "emptyDropdownText": "No filters available",
+    "namePrefix": "AutoDashFilter",
+    "selectors": {
+      "openButton": "button[aria-label=\"Open Filter\"]",
+      "sidebar": "#dashboard-filter-sidebar",
+      "savedDropdown": "button#dropdownFilter",
+      "savedDropdownMenu": ".dropdown-menu.custom-dropdownmenu",
+      "newFilterButton": "button#dashboard-addFilter-button",
+      "editFilterButton": "button#dashboard-editFilter-button",
+      "deleteFilterButton": "button#dashboard-deleteFilter-button",
+      "filterNameInput": "#dashboard-filterName-inputText",
+      "saveFilterButton": "button#dashboard-saveFilters-button",
+      "cancelButton": "button#dashboard-clearFilter-button",
+      "clearButton": "button#dashboard-filterClear-button",
+      "applyButton": "button#dashboard-filterApply-button",
+      "closeButton": "#dashboard-closeFilter-div",
+      "startDate": "#dashboard-startDate-date",
+      "endDate": "#dashboard-endDate-date",
+      "departmentMultiselect": "#dashboard-filterDepartmentData-multiselect",
+      "statusMultiselect": "#dashboard-filterStatusList-multiselect",
+      "modelTypeMultiselect": "#dashboard-filterModelType-multiselect",
+      "tagsMultiselect": "#dashboard-filterSelectTag-multiselect",
+      "threatModelsMultiselect": "#dashboard-filterthreatmodel-multiselect",
+      "confirmDialog": ".k-window.k-dialog",
+      "confirmCancelButton": "button#confirmation-close-button",
+      "confirmDeleteFilterButton": "[id=\"confirmAction-Delete Filter-button\"]"
+    },
+    "confirmDeleteTitle": "Delete Filter"
+  },
   "complianceSummary": {
     "heading": "Compliance Summary",
     "filterTitle": "Compliance Framework",
