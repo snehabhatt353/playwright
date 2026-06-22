@@ -9,19 +9,22 @@
     "login": "/idsvr/Account/Login",
     "threatModels": "/threatmodels",
     "threatModelsArchived": "/threatmodels/archived",
-    "threatFramework": "/secure-design-graph"
+    "threatFramework": "/secure-design-graph",
+    "dashboard": "/dashboard"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
     "loggedIn": "\\/threatmodels(\\?|$|\\/)",
     "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}",
-    "threatFramework": "\\/secure-design-graph"
+    "threatFramework": "\\/secure-design-graph",
+    "dashboard": "\\/dashboard(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
     "threatModelDiagram": "Threat Model Diagram \\| ThreatModeler",
     "threatModelsArchived": "Archived Threat Models \\| ThreatModeler",
-    "threatFramework": "Secure Design Graph \\| ThreatModeler"
+    "threatFramework": "Secure Design Graph \\| ThreatModeler",
+    "dashboard": "Overview Dashboard \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -334,6 +337,30 @@
     },
     "assistRule": {
       "namePrefix": "AutoAssist"
+    }
+  },
+  "dashboard": {
+    "heading": "Overview Dashboard",
+    "navButton": "Dashboards menu",
+    "tiles": {
+      "threatModels": "Threat Models",
+      "highValueTargets": "High Value Targets",
+      "openSecurityRequirements": "Open Security Requirements",
+      "mitigatedThreats": "Mitigated Threats"
+    },
+    "sections": ["Threat Trends", "Security Implementation Review", "Top 10", "Compliance Summary"],
+    "threatTrendStatuses": ["All", "Open", "In Progress", "Not Applicable", "Mitigated"],
+    "aiWidgetDefaultTitle": "Threats by Status",
+    "selectors": {
+      "summaryTile": ".tm-dashboard-card.custom-padding",
+      "threatTrendsCard": ".tm-dashboard-card.custom-padding:not(.text-center)",
+      "aiWidget": ".ai-widget-container",
+      "filterButton": "button[aria-label=\"Open Filter\"]",
+      "clearFilterButton": "#dashboard-filterClear-button"
+    },
+    "patterns": {
+      "nonNegativeInt": "^[0-9]+$",
+      "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
   "customFieldDefaults": {
