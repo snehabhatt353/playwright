@@ -11,7 +11,8 @@
     "threatModelsArchived": "/threatmodels/archived",
     "threatFramework": "/secure-design-graph",
     "dashboard": "/dashboard",
-    "integrationDashboard": "/integration-dashboard"
+    "integrationDashboard": "/integration-dashboard",
+    "templateBuilder": "/template-builder"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
@@ -19,7 +20,8 @@
     "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}",
     "threatFramework": "\\/secure-design-graph",
     "dashboard": "\\/dashboard(\\?|$|\\/)",
-    "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)"
+    "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)",
+    "templateBuilder": "\\/template-builder(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
@@ -27,7 +29,8 @@
     "threatModelsArchived": "Archived Threat Models \\| ThreatModeler",
     "threatFramework": "Secure Design Graph \\| ThreatModeler",
     "dashboard": "Overview Dashboard \\| ThreatModeler",
-    "integrationDashboard": "Integration Dashboard \\| ThreatModeler"
+    "integrationDashboard": "Integration Dashboard \\| ThreatModeler",
+    "templateBuilder": "Template Builder \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -364,6 +367,28 @@
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
       "ratio": "^[0-9]+\\/[0-9]+$"
+    }
+  },
+  "templateBuilder": {
+    "heading": "Template Builder",
+    "navAriaLabel": "Template Builder",
+    "dialogTitle": "New Template",
+    "namePrefix": "AutoTemplate",
+    "searchPlaceholder": "Search by name and tags",
+    "selectors": {
+      "navLink": "a[aria-label=\"Template Builder\"]",
+      "createMenuTrigger": "button#create-new-menu",
+      "createMenuTemplateItem": "button.tm-cn-report-dropdown-item",
+      "dialog": ".k-dialog-wrapper",
+      "templateNameInput": "input[placeholder=\"Template Name\"]",
+      "tagsInput": "input[placeholder=\"Add tags\"]",
+      "createButton": "button#template-builder-createNewTemplate-button",
+      "closeButton": ".k-dialog-wrapper button[aria-label=\"Close\"]",
+      "searchInput": "#template-builder-search-input input",
+      "deleteButton": "button#template-builder-delete-button",
+      "departmentFilterButton": "button#template-builder-departmentFilter-button",
+      "selectAllCheckbox": "[id=\"'template-builder-selAll-checkbox'\"]",
+      "departmentFilterCheckbox": "input.filter-checkbox[id^=\"templateBuilder-\"][id$=\"-checkbox\"]"
     }
   },
   "customWidget": {
