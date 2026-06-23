@@ -472,7 +472,19 @@
       "confirmCancelButton": "button#confirmation-close-button",
       "confirmDeleteFilterButton": "[id=\"confirmAction-Delete Filter-button\"]"
     },
-    "confirmDeleteTitle": "Delete Filter"
+    "confirmDeleteTitle": "Delete Filter",
+    "kendo": {
+      "defaultPlaceholder": "All",
+      "tagsPlaceholder": "Select Tags",
+      "expectedStatusOptions": ["In Progress", "Review", "Starting", "Started", "Pending For Approval", "Approved", "Rejected"],
+      "modelStatusMinOptions": 6,
+      "selectors": {
+        "multiselectInput": "kendo-multiselect{id} input.k-input-inner",
+        "openPopup": "kendo-popup .k-list, .k-list-container .k-list",
+        "popupOption": "li.k-list-item",
+        "selectedChip": "kendo-multiselect{id} .k-chip"
+      }
+    }
   },
   "complianceSummary": {
     "heading": "Compliance Summary",
