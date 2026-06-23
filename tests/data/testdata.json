@@ -10,21 +10,24 @@
     "threatModels": "/threatmodels",
     "threatModelsArchived": "/threatmodels/archived",
     "threatFramework": "/secure-design-graph",
-    "dashboard": "/dashboard"
+    "dashboard": "/dashboard",
+    "integrationDashboard": "/integration-dashboard"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
     "loggedIn": "\\/threatmodels(\\?|$|\\/)",
     "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}",
     "threatFramework": "\\/secure-design-graph",
-    "dashboard": "\\/dashboard(\\?|$|\\/)"
+    "dashboard": "\\/dashboard(\\?|$|\\/)",
+    "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
     "threatModelDiagram": "Threat Model Diagram \\| ThreatModeler",
     "threatModelsArchived": "Archived Threat Models \\| ThreatModeler",
     "threatFramework": "Secure Design Graph \\| ThreatModeler",
-    "dashboard": "Overview Dashboard \\| ThreatModeler"
+    "dashboard": "Overview Dashboard \\| ThreatModeler",
+    "integrationDashboard": "Integration Dashboard \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -361,6 +364,30 @@
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
       "ratio": "^[0-9]+\\/[0-9]+$"
+    }
+  },
+  "integrationDashboard": {
+    "heading": "Integration Dashboard",
+    "navParentButton": "Dashboards menu",
+    "navItemSelector": "#create-newIntegrationDashboard-menu",
+    "sectionHeading": "Security Issue Summary",
+    "expectedIntegrations": ["Jira", "Mantis", "Service Now", "Azure Boards"],
+    "columns": ["Sr.", "Department", "Threat Model Name", "Issue Link", "Source Component", "Source Type", "Source Title", "Severity", "Created On", "Status"],
+    "durationDefaultLabel": "Last 90 Days",
+    "durationOptions": ["All", "Last 7 Days", "Last 30 Days", "Last 60 Days", "Last 90 Days", "Custom"],
+    "exportOptions": ["Excel", "PDF"],
+    "selectors": {
+      "integrationMultiselect": "#dashboard-integration-multiselect",
+      "integrationChip": "kendo-multiselect#dashboard-integration-multiselect .k-chip",
+      "integrationChipLabelTemplate": "[id=\"dashboard-integration-multiselect-{value}-span\"]",
+      "durationToggle": "#durationFieldDropdown",
+      "durationOption": ".duration-option-item",
+      "selectedDurationOption": ".duration-option-item.selected",
+      "exportToggle": "#exportFieldDropdown",
+      "exportOption": ".export-option-item",
+      "grid": "kendo-grid#dashboard-integrationKendoGrid-kendogrid",
+      "gridColumnHeader": "kendo-grid#dashboard-integrationKendoGrid-kendogrid th[role=\"columnheader\"]",
+      "gridColumnTitle": "span.k-column-title"
     }
   },
   "topTen": {
