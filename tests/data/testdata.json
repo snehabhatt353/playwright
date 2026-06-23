@@ -12,7 +12,8 @@
     "threatFramework": "/secure-design-graph",
     "dashboard": "/dashboard",
     "integrationDashboard": "/integration-dashboard",
-    "templateBuilder": "/template-builder"
+    "templateBuilder": "/template-builder",
+    "solutionsHub": "/solutions-hub"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
@@ -21,7 +22,8 @@
     "threatFramework": "\\/secure-design-graph",
     "dashboard": "\\/dashboard(\\?|$|\\/)",
     "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)",
-    "templateBuilder": "\\/template-builder(\\?|$|\\/)"
+    "templateBuilder": "\\/template-builder(\\?|$|\\/)",
+    "solutionsHub": "\\/solutions-hub(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
@@ -30,7 +32,8 @@
     "threatFramework": "Secure Design Graph \\| ThreatModeler",
     "dashboard": "Overview Dashboard \\| ThreatModeler",
     "integrationDashboard": "Integration Dashboard \\| ThreatModeler",
-    "templateBuilder": "Template Builder \\| ThreatModeler"
+    "templateBuilder": "Template Builder \\| ThreatModeler",
+    "solutionsHub": "Solutions Hub \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -367,6 +370,27 @@
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
       "ratio": "^[0-9]+\\/[0-9]+$"
+    }
+  },
+  "solutionsHub": {
+    "heading": "Solutions Hub",
+    "navAriaLabel": "Solutions Hub",
+    "searchPlaceholder": "Search by name",
+    "downloadDialogTitle": "Download or Open model",
+    "downloadButtonAria": "Download as Threat Model",
+    "selectors": {
+      "navLink": "a[aria-label=\"Solutions Hub\"]",
+      "searchInput": "#solutionHub-searchName-input input",
+      "totalCount": ".solutionsCount",
+      "filterButton": "button#solutionHub-filter-button",
+      "modelTab": "[id^=\"marketplace-open-\"][role=\"tab\"]",
+      "previewPanel": "[role=\"tabpanel\"].main-container",
+      "downloadButton": "button#solutionHub-downloadTM-button",
+      "downloadDialog": ".k-window.k-dialog[role=\"dialog\"]",
+      "downloadDialogCancel": "button#confirmation-close-button",
+      "filterApplyButton": "button[aria-label=\"Apply Filter\"]",
+      "filterClearButton": "button[aria-label=\"Clear All Filter\"]",
+      "filterCheckbox": "input[type=\"checkbox\"]"
     }
   },
   "templateBuilder": {
