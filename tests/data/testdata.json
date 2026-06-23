@@ -13,7 +13,8 @@
     "dashboard": "/dashboard",
     "integrationDashboard": "/integration-dashboard",
     "templateBuilder": "/template-builder",
-    "solutionsHub": "/solutions-hub"
+    "solutionsHub": "/solutions-hub",
+    "accessManagement": "/user-management"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
@@ -23,7 +24,8 @@
     "dashboard": "\\/dashboard(\\?|$|\\/)",
     "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)",
     "templateBuilder": "\\/template-builder(\\?|$|\\/)",
-    "solutionsHub": "\\/solutions-hub(\\?|$|\\/)"
+    "solutionsHub": "\\/solutions-hub(\\?|$|\\/)",
+    "accessManagement": "\\/user-management(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
@@ -33,7 +35,11 @@
     "dashboard": "Overview Dashboard \\| ThreatModeler",
     "integrationDashboard": "Integration Dashboard \\| ThreatModeler",
     "templateBuilder": "Template Builder \\| ThreatModeler",
-    "solutionsHub": "Solutions Hub \\| ThreatModeler"
+    "solutionsHub": "Solutions Hub \\| ThreatModeler",
+    "accessManagement": "Access Management \\| ThreatModeler",
+    "accessManagementUsers": "Users \\| ThreatModeler",
+    "accessManagementGroups": "Groups \\| ThreatModeler",
+    "accessManagementRoles": "Roles \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -370,6 +376,40 @@
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
       "ratio": "^[0-9]+\\/[0-9]+$"
+    }
+  },
+  "accessManagement": {
+    "heading": "Access Management",
+    "navAriaLabel": "Access Management",
+    "tabs": {
+      "departments": {
+        "labelPattern": "^Departments \\d",
+        "columns": ["Name", "Users", "Groups", "Licenses used"],
+        "titleRegex": "Access Management \\| ThreatModeler"
+      },
+      "users": {
+        "labelPattern": "^Users \\d",
+        "columns": ["Name", "Status", "Email", "Department", "Group"],
+        "titleRegex": "Users \\| ThreatModeler"
+      },
+      "groups": {
+        "labelPattern": "^Groups \\d",
+        "columns": ["Name", "Department", "Users"],
+        "titleRegex": "Groups \\| ThreatModeler"
+      },
+      "rolesAndPermissions": {
+        "labelPattern": "^Roles & Permissions \\d",
+        "columns": ["Name", "Description", "Type"],
+        "titleRegex": "Roles \\| ThreatModeler"
+      }
+    },
+    "searchPlaceholder": "Search",
+    "selectors": {
+      "navLink": "a[href=\"/user-management\"]",
+      "tab": "[role=\"tab\"]",
+      "searchInput": "input[placeholder=\"Search\"]",
+      "columnHeader": "th[role=\"columnheader\"]",
+      "columnTitle": ".k-column-title"
     }
   },
   "solutionsHub": {
