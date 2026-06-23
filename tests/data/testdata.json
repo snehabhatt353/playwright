@@ -378,6 +378,23 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "addThreats": {
+    "dialogTitle": "Add Threat",
+    "namePrefix": "AddThreatsTM",
+    "selectors": {
+      "diagramThreatsPanelButton": "button#sideMenuTour_3",
+      "addNewButton": "button#diagram-threats-addNewThreat-button",
+      "selectAllButton": "button#diagram-threats-selectAll-button",
+      "actionsButton": "button#diagram-threats-action-button",
+      "addThreatDialog": ".k-window.k-dialog",
+      "submitButton": "button#diagram-Threat-submit-button",
+      "cancelButton": "button#diagram-Threat-cancel-button",
+      "addMoreButton": "button#diagram-Threat-addMore-button",
+      "srMultiselectPlaceholder": "input[placeholder=\"Select Security Requirements\"]",
+      "fixDiagramModal": "ngb-modal-window",
+      "fixDiagramBackdrop": "ngb-modal-backdrop"
+    }
+  },
   "accessManagement": {
     "heading": "Access Management",
     "navAriaLabel": "Access Management",
