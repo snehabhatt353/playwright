@@ -363,6 +363,22 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "topTen": {
+    "heading": "Top 10",
+    "expectedRowCount": 10,
+    "tabs": {
+      "threats": { "tabId": "#ngb-nav-0", "panelId": "#ngb-nav-0-panel", "label": "Threats" },
+      "securityRequirements": { "tabId": "#ngb-nav-1", "panelId": "#ngb-nav-1-panel", "label": "Security Requirements" },
+      "components": { "tabId": "#ngb-nav-2", "panelId": "#ngb-nav-2-panel", "label": "Components" }
+    },
+    "validRisks": ["Very High", "High", "Medium", "Low", "Very Low"],
+    "selectors": {
+      "listItem": "li.list-group-item",
+      "rowName": ".tm-word-length",
+      "rowCount": ".um-dashboard-counter-labels",
+      "rowRiskPill": "[id^=\"dashboard-risk\"]"
+    }
+  },
   "traceabilityMatrix": {
     "heading": "Security Implementation Review",
     "subtitle": "Threat Traceability Matrix",
