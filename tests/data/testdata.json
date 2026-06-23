@@ -363,6 +363,26 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "traceabilityMatrix": {
+    "heading": "Security Implementation Review",
+    "subtitle": "Threat Traceability Matrix",
+    "dialogHeading": "Threats Traceability",
+    "risks": ["Very High", "High", "Medium", "Low", "Very Low"],
+    "statuses": ["Open", "Mitigated", "Fixed", "Not Applicable", "Need More Details", "Not Tested", "Partially Mitigated", "Mitigated by Control", "Out of Scope"],
+    "selectors": {
+      "card": "#dashboard-traceabilityMatrix-div",
+      "table": "table.matrix-table",
+      "cellByCoords": "#dashboard-traceabilityMatrix-{row}-{col}-div",
+      "anyCell": "button.matrix-action-btn",
+      "headerCol": "table.matrix-table thead th[scope=\"col\"][placement]",
+      "rowHeader": "table.matrix-table tbody tr th[scope=\"row\"]",
+      "dialog": ".k-window.k-dialog[role=\"dialog\"]",
+      "dialogHeadingId": "#threatsTraceabilityHeading",
+      "dialogCloseButton": "button.k-window-titlebar-action[aria-label=\"Close\"]",
+      "dialogAccordionToggleByIndex": "#ngb-accordion-item-{index}-toggle",
+      "dialogAccordionItem": "[ngbaccordionitem]"
+    }
+  },
   "threatTrends": {
     "heading": "Threat Trends",
     "statuses": ["All", "Open", "In Progress", "Not Applicable", "Mitigated"],
