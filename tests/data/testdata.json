@@ -366,6 +366,30 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "customWidget": {
+    "panelTitle": "Custom Widget",
+    "greetingPrefix": "Hey,",
+    "subtitle": "Create a custom widget to analyze data related to your models",
+    "textareaPlaceholder": "Ask to create, manage, suggest",
+    "sendButtonAria": "Send",
+    "micButtonAria": "Start voice input",
+    "closeButtonAria": "Close AI panel",
+    "helpButtonAria": "Open help panel",
+    "expectedSuggestionCount": 3,
+    "widgetMenuOptions": ["Edit", "Delete"],
+    "selectors": {
+      "openButton": "#create-custom-widget-button",
+      "panel": "#dashboard-wingman-sidebar",
+      "closeButton": "button#wingman-close-button",
+      "micButton": "button#wingman-mic-button",
+      "helpButton": "button#wingman-help-button",
+      "sendButton": "#dashboard-wingman-sidebar button[aria-label=\"Send\"]",
+      "textarea": "#textarea-landing",
+      "suggestionByIndex": "#suggestion-{index}",
+      "widgetMenuButton": ".widget-card__menu-btn",
+      "widgetMenuItem": "button.widget-card__dropdown-item"
+    }
+  },
   "integrationDashboard": {
     "heading": "Integration Dashboard",
     "navParentButton": "Dashboards menu",
