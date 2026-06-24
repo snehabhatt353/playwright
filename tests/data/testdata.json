@@ -384,6 +384,7 @@
   "customField": {
     "sectionHeading": "Custom Fields",
     "menuItemSelector": "#config-custom-fields-tab",
+    "defaultActiveTabId": "#entity-tab-Project",
     "entityTabs": [
       { "id": "#entity-tab-Project", "label": "Models" },
       { "id": "#entity-tab-Component", "label": "Components" },
@@ -396,12 +397,41 @@
       { "id": "#entity-tab-ProjectNote", "label": "Notes" },
       { "id": "#entity-tab-ProjectWorkflowHistory", "label": "Approval Workflows" }
     ],
+    "activeTabClass": "entity-tab--active",
+    "addFieldDialog": {
+      "title": "New Field",
+      "expectedLabels": ["Field Name", "Description", "Mandatory Field", "Field Group", "Data Type", "Visible", "Editable", "Exportable"],
+      "fieldNamePlaceholder": "Enter Field Name",
+      "descriptionPlaceholder": "Description"
+    },
+    "addGroupDialog": {
+      "title": "New Group",
+      "namePlaceholder": "Enter Group Name"
+    },
+    "dataTypeModal": {
+      "title": "Data Type",
+      "expectedColumns": ["Name", "Description", "Actions"]
+    },
     "selectors": {
       "section": "#section-custom-fields",
       "dataTypeButton": "button#data-type-button",
       "addFieldButton": "button#create-new-field-button",
       "addGroupButton": "button#create-group-button",
-      "starFieldButton": "button[id^=\"star-field-\"]"
+      "fieldRow": ".field-row",
+      "fieldNameText": ".field-name-text",
+      "fieldTypeText": ".field-type-text",
+      "starFieldButton": "button[id^=\"star-field-\"]",
+      "editFieldButton": "button[id^=\"edit-field-\"]",
+      "deleteFieldButton": "button[id^=\"delete-field-\"]",
+      "dialog": ".k-window.k-dialog[role=\"dialog\"]",
+      "dialogCloseX": "button.k-window-titlebar-action[aria-label=\"Close\"]",
+      "newFieldNameInput": "input[placeholder=\"Enter Field Name\"]",
+      "newFieldCreateButton": "button#config-customField-save-button",
+      "newFieldCancelButton": "button#config-customField-cancel-button",
+      "newGroupNameInput": "input[placeholder=\"Enter Group Name\"]",
+      "newGroupCreateButton": "button#group-save-button",
+      "newGroupCancelButton": "button#group-cancel-button",
+      "dataTypeAddButton": "button#custom-data-type-button"
     }
   },
   "configurations": {

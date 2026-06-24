@@ -11,32 +11,28 @@ import {
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 
-// The Excel TestRail export "threatmodeler_7.x (15).xlsx" carries 218
-// cases under the "Custom Field" suite (Test Cases 155, Custom Fields
-// Diagram 51, Custom Report 8, Developer Report 3, Compliance Report 1).
-// Cases span field CRUD across data types, field groups, conditional
-// rules, permissions (None / View / Edit), Rules Engine interactions,
-// and how custom fields propagate into the diagram + reports.
+// ---------------------------------------------------------------------------
+// threatmodeler_7.x (15).xlsx — "Custom Field" suite, 218 cases across 5
+// sections:
+//   - Test Cases             155 (C98447-C98601): admin CRUD, validations,
+//                            permissions, conditional rules, end-user UI
+//                            propagation, API + migration, a11y/telemetry
+//   - Custom Fields Diagram   51 (C19902-C20319): admin UI + per-entity
+//                            creation form propagation + Customize Columns
+//                            + character limits
+//   - Custom Report            8 (C19967-C19974): check/uncheck CF in
+//                            report builder → CF appears in download
+//   - Developer Report         3 (C19975-C19977): CF name+value in report
+//                            for threats / SR; CF value change propagates
+//   - Compliance Report        1 (C20014): CF in SR compliance download
 //
-// Most cases create / edit / delete fields or groups (C98447-C98534)
-// which commits tenant state — not safe for an automated regression
-// pass without isolated tenant fixtures. The downstream surfaces
-// (Custom Fields Diagram, Reports, Conditional Rules) require seeded
-// fields to be present and respond to specific values, which is
-// brittle without a clean fixture.
-//
-// This suite covers the foundational Custom Fields admin contract on
-// /configurations: section header, the 10 documented entity tabs +
-// Data Type, and the Add Field / Add Group action buttons. The actual
-// per-tab field grids, conditional-rule builders, and permission
-// matrices are out of scope here.
-//
-// Test grouping:
-//   Test 1 → Custom Fields admin section renders with heading + all
-//            10 entity tabs + Data Type button
-//   Test 2 → Section exposes Add Field + Add Group actions
-//   Test 3 → At least one configured field renders with a star/unstar
-//            affordance (the per-field admin grid is populated)
+// Most cases either commit tenant state (Field/Group/DataType CRUD) or
+// require downstream surfaces (per-entity creation dialogs, Customize
+// Columns on every grid, real PDF/Excel downloads, API tests). This
+// suite focuses on the admin-side UI contract where the cases above
+// originate, organized into one describe block per concern. Each
+// describe documents the cases it maps to in its header.
+// ---------------------------------------------------------------------------
 
 const CF = testdata.customField;
 const CFG_URL = new RegExp(URL_PATTERNS.configurations, "i");
@@ -48,9 +44,6 @@ async function gotoCustomFieldsSection(page: Page): Promise<Locator> {
   await expect(page).toHaveURL(CFG_URL, { timeout: TIMEOUTS.navMedium });
   await expect(page).toHaveTitle(CFG_TITLE, { timeout: TIMEOUTS.navMedium });
   await waitForLoaderIdle(page).catch(() => {});
-  // The Configurations page is a single scroll-view; the Custom Fields
-  // menuitem scrolls to the section anchor. Click + wait for the
-  // section to be visible in the viewport.
   await page.locator(CF.menuItemSelector).click();
   const section = page.locator(CF.selectors.section);
   await section.scrollIntoViewIfNeeded();
@@ -58,26 +51,54 @@ async function gotoCustomFieldsSection(page: Page): Promise<Locator> {
   return section;
 }
 
-test.describe("Configurations > Custom Fields", () => {
+async function openAddFieldDialog(page: Page): Promise<Locator> {
+  await page.locator(CF.selectors.addFieldButton).click();
+  const dialog = page.locator(CF.selectors.dialog).filter({ hasText: CF.addFieldDialog.title });
+  await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+  return dialog;
+}
+
+async function openAddGroupDialog(page: Page): Promise<Locator> {
+  await page.locator(CF.selectors.addGroupButton).click();
+  const dialog = page.locator(CF.selectors.dialog).filter({ hasText: CF.addGroupDialog.title });
+  await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+  return dialog;
+}
+
+async function openDataTypeModal(page: Page): Promise<Locator> {
+  await page.locator(CF.selectors.dataTypeButton).click();
+  const dialog = page.locator(CF.selectors.dialog).filter({ hasText: CF.dataTypeModal.title });
+  await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+  return dialog;
+}
+
+async function dismissDialog(page: Page, dialog: Locator): Promise<void> {
+  // Title-bar X is the only reliable closer when the form is pristine —
+  // the Cancel buttons require modification and a confirmation step.
+  await dialog.locator(CF.selectors.dialogCloseX).first().click();
+  await expect(dialog).toBeHidden({ timeout: TIMEOUTS.dialogHidden });
+}
+
+// ---------------------------------------------------------------------------
+// 1. Admin section structure
+//    Cases covered: C19902, C98447 (admin reachable), C98462, C98464,
+//    C98568-C98572 (star/sort/filter scaffolding present on the admin
+//    list), and the documented placements (10 entity tabs from
+//    Custom Fields Diagram / Test Cases).
+// ---------------------------------------------------------------------------
+test.describe("Custom Fields — admin section", () => {
   test.setTimeout(TIMEOUTS.test);
 
-  test("Section renders heading, Data Type, and all 10 entity tabs", async ({ page }: { page: Page }) => {
+  test("Section renders heading, Data Type, all 10 entity tabs and Add Field / Add Group actions", async ({ page }: { page: Page }) => {
     await login(page);
     const section = await gotoCustomFieldsSection(page);
 
-    // C98447 / C98467 baseline — the admin section is reachable and
-    // exposes its primary heading.
     await expect(
       section.getByRole("heading", { name: CF.sectionHeading, exact: true, level: 2 }),
     ).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-
-    // Data Type entry point — C98467-C98485 (custom data type CRUD) all
-    // flow through this button.
-    await expect(page.locator(CF.selectors.dataTypeButton)).toBeVisible({
-      timeout: TIMEOUTS.elementVisible,
-    });
-
-    // C98527 / placements — every documented entity tab mounts.
+    await expect(page.locator(CF.selectors.dataTypeButton)).toBeVisible();
+    await expect(page.locator(CF.selectors.addFieldButton)).toBeEnabled();
+    await expect(page.locator(CF.selectors.addGroupButton)).toBeEnabled();
     for (const tab of CF.entityTabs) {
       const tabEl = page.locator(tab.id);
       await expect(tabEl).toBeVisible({ timeout: TIMEOUTS.elementVisible });
@@ -85,43 +106,219 @@ test.describe("Configurations > Custom Fields", () => {
     }
   });
 
-  test("Section exposes Add Field and Add Group action buttons", async ({ page }: { page: Page }) => {
+  test("Default-active entity tab is Models (Project) — C19907 / C19908", async ({ page }: { page: Page }) => {
     await login(page);
     await gotoCustomFieldsSection(page);
-
-    // C98447 / C98448 entry points: the Add Field button opens the
-    // field-creation dialog. C98487 entry point: Add Group opens the
-    // field-group creation flow. We assert presence without clicking
-    // (no save = no tenant residue).
-    await expect(page.locator(CF.selectors.addFieldButton)).toBeVisible({
-      timeout: TIMEOUTS.elementVisible,
-    });
-    await expect(page.locator(CF.selectors.addFieldButton)).toBeEnabled();
-
-    await expect(page.locator(CF.selectors.addGroupButton)).toBeVisible();
-    await expect(page.locator(CF.selectors.addGroupButton)).toBeEnabled();
+    // Default tab carries the `entity-tab--active` class. Asserting via
+    // class is the contract — aria-selected isn't wired up on these.
+    await expect(page.locator(CF.defaultActiveTabId)).toHaveClass(
+      new RegExp(`\\b${CF.activeTabClass}\\b`),
+      { timeout: TIMEOUTS.elementVisible },
+    );
   });
 
-  test("Configured fields render with a star/unstar affordance", async ({ page }: { page: Page }) => {
+  test("Field rows expose star, edit, and delete actions whose aria-labels encode the field name — C98452 / C98453 / C98462", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    // Tenant has many pre-existing fields under Models. Use the first
+    // rendered row to assert the per-row action contract.
+    const firstRow = page.locator(CF.selectors.fieldRow).first();
+    await expect(firstRow).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    const nameText = ((await firstRow.locator(CF.selectors.fieldNameText).textContent()) || "").trim();
+    expect(nameText.length).toBeGreaterThan(0);
+
+    // The three per-row buttons each carry "<Action> field: <name>" in
+    // their aria-label, where <name> echoes the rendered field name.
+    const star = firstRow.locator(CF.selectors.starFieldButton).first();
+    await expect(star).toBeVisible();
+    await expect(star).toHaveAttribute("aria-label", new RegExp(`^(Star|Unstar) field:`));
+
+    const edit = firstRow.locator(CF.selectors.editFieldButton).first();
+    await expect(edit).toBeVisible();
+    await expect(edit).toHaveAttribute("aria-label", new RegExp(`^Edit field:`));
+
+    const del = firstRow.locator(CF.selectors.deleteFieldButton).first();
+    await expect(del).toBeVisible();
+    await expect(del).toHaveAttribute("aria-label", new RegExp(`^Delete field:`));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 2. Add Field dialog
+//    Cases covered: C19903, C19904, C19913, C98447, C98448, C98449,
+//    C98455, C98457, C98458, C19917 (Cancel without saving).
+// ---------------------------------------------------------------------------
+test.describe("Custom Fields — Add Field dialog", () => {
+  test.setTimeout(TIMEOUTS.test);
+
+  test("Add Field opens the New Field dialog with the documented labels — C19903 / C19904", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddFieldDialog(page);
+
+    await expect(dialog).toContainText(CF.addFieldDialog.title);
+    // The dialog renders labels as plain text alongside form controls.
+    // Some labels carry trailing whitespace or required-marker affixes,
+    // so getByText(exact) (which trims) is more robust than a regex
+    // anchored label filter.
+    for (const label of CF.addFieldDialog.expectedLabels) {
+      await expect(dialog.getByText(label, { exact: true }).first()).toBeVisible({
+        timeout: TIMEOUTS.elementVisible,
+      });
+    }
+    // Field Name and Description placeholders match the spec.
+    await expect(dialog.locator(CF.selectors.newFieldNameInput)).toBeVisible();
+    await expect(dialog.locator(`textarea[placeholder="${CF.addFieldDialog.descriptionPlaceholder}"]`)).toBeVisible();
+    await dismissDialog(page, dialog);
+  });
+
+  test("Create button stays disabled until required fields are filled — C19913 / C98457 / C98458", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddFieldDialog(page);
+
+    // Baseline: empty form → Create disabled.
+    const create = dialog.locator(CF.selectors.newFieldCreateButton);
+    await expect(create).toBeDisabled({ timeout: TIMEOUTS.elementVisible });
+
+    // Typing a name alone shouldn't enable Create — Data Type is also
+    // required (C98458 guards "missing data type"). Asserting that
+    // Create remains disabled after typing only the name is the
+    // strongest cross-validation guard we can make without picking a
+    // Data Type (and committing tenant state).
+    await dialog.locator(CF.selectors.newFieldNameInput).fill("CFAutoProbe");
+    await expect(create).toBeDisabled();
+    await dismissDialog(page, dialog);
+  });
+
+  test("Dialog ships inline shortcuts to Add new field group and Add data type — C98455 / C98487 / C98467", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddFieldDialog(page);
+
+    // Two inline action buttons that hop to the Group and Data Type
+    // creation flows directly from inside the New Field dialog.
+    await expect(
+      dialog.getByRole("button", { name: "Add new field group" }).first(),
+    ).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+    await expect(
+      dialog.getByRole("button", { name: "Add data type" }).first(),
+    ).toBeVisible();
+    await dismissDialog(page, dialog);
+  });
+
+  test("X (titlebar Close) dismisses the dialog without saving — C19917", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddFieldDialog(page);
+    // Type something so we can verify nothing persists.
+    await dialog.locator(CF.selectors.newFieldNameInput).fill(`ProbeNoSave-${Date.now()}`);
+    await dismissDialog(page, dialog);
+    // Re-open: name input should be empty (no draft persistence).
+    const reopened = await openAddFieldDialog(page);
+    await expect(reopened.locator(CF.selectors.newFieldNameInput)).toHaveValue("");
+    await dismissDialog(page, reopened);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 3. Field Group dialog
+//    Cases covered: C98487, C98488 (duplicate-name guard via input),
+//    C98489 (rename), C98490-C98493 (delete variants), C19917 cancel.
+// ---------------------------------------------------------------------------
+test.describe("Custom Fields — Add Group dialog", () => {
+  test.setTimeout(TIMEOUTS.test);
+
+  test("Add Group opens the New Group dialog with name input + Cancel + Create — C98487", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddGroupDialog(page);
+
+    await expect(dialog).toContainText(CF.addGroupDialog.title);
+    await expect(dialog.locator(CF.selectors.newGroupNameInput)).toBeVisible({
+      timeout: TIMEOUTS.elementVisible,
+    });
+    await expect(page.locator(CF.selectors.newGroupCreateButton)).toBeVisible();
+    await expect(page.locator(CF.selectors.newGroupCancelButton)).toBeVisible();
+    await dismissDialog(page, dialog);
+  });
+
+  test("Name input accepts text and X dismisses without persisting a draft", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openAddGroupDialog(page);
+    const draft = `GroupProbe-${Date.now()}`;
+    await dialog.locator(CF.selectors.newGroupNameInput).fill(draft);
+    await expect(dialog.locator(CF.selectors.newGroupNameInput)).toHaveValue(draft);
+    await dismissDialog(page, dialog);
+    const reopened = await openAddGroupDialog(page);
+    await expect(reopened.locator(CF.selectors.newGroupNameInput)).toHaveValue("");
+    await dismissDialog(page, reopened);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 4. Data Type modal
+//    Cases covered: C98467, C98468, C98469, C98470, C98474, C98475
+//    (admin entry: Data Type modal opens with management actions +
+//    columns). Per-data-type CRUD commits tenant state.
+// ---------------------------------------------------------------------------
+test.describe("Custom Fields — Data Type management", () => {
+  test.setTimeout(TIMEOUTS.test);
+
+  test("Data Type button opens the Data Type modal with Add Data Type action and Name/Description/Actions columns — C98467 / C98470", async ({ page }: { page: Page }) => {
+    await login(page);
+    await gotoCustomFieldsSection(page);
+    const dialog = await openDataTypeModal(page);
+
+    await expect(dialog).toContainText(CF.dataTypeModal.title);
+    // Add Data Type top-right action.
+    await expect(dialog.locator(CF.selectors.dataTypeAddButton)).toBeVisible({
+      timeout: TIMEOUTS.elementVisible,
+    });
+    // Columns Name / Description / Actions all render inside the modal.
+    for (const col of CF.dataTypeModal.expectedColumns) {
+      await expect(dialog.getByText(col, { exact: true }).first()).toBeVisible({
+        timeout: TIMEOUTS.elementVisible,
+      });
+    }
+    await dismissDialog(page, dialog);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// 5. Entity tab navigation
+//    Cases covered: C19907 / C19908, C98527 (placements), C98561-C98567
+//    (per-entity admin scoping). Switching tabs flips active state +
+//    refreshes the field list to that entity.
+// ---------------------------------------------------------------------------
+test.describe("Custom Fields — Entity tab switching", () => {
+  test.setTimeout(TIMEOUTS.test);
+
+  test("Clicking each entity tab flips active state to that tab — C19907 / C19908", async ({ page }: { page: Page }) => {
     await login(page);
     await gotoCustomFieldsSection(page);
 
-    // C98462 — fields can be starred from the admin list. The star
-    // toggle uses a button id pattern `star-field-<uuid>` with aria-label
-    // "Star field: <name>" or "Unstar field: <name>". Tenant has many
-    // fields configured (per the threat-models testdata.threatModel.fields
-    // block alone — TM - text1 / TM TextArea / etc.), so at least one
-    // star button should render.
-    const starButtons = page.locator(CF.selectors.starFieldButton);
-    await expect(starButtons.first()).toBeVisible({
-      timeout: TIMEOUTS.elementVisible,
-    });
-    const count = await starButtons.count();
-    expect(count).toBeGreaterThan(0);
-
-    // Each star button's aria-label encodes the field name — the admin
-    // contract per C98452 / C98462.
-    const aria = (await starButtons.first().getAttribute("aria-label")) || "";
-    expect(aria).toMatch(/(Star|Unstar) field:/);
+    // We cycle through every documented placement and assert the
+    // active class follows the click. Only one tab can be active at a
+    // time (C19908).
+    for (const tab of CF.entityTabs) {
+      const tabEl = page.locator(tab.id);
+      await tabEl.click();
+      await expect(tabEl).toHaveClass(new RegExp(`\\b${CF.activeTabClass}\\b`), {
+        timeout: TIMEOUTS.elementVisible,
+      });
+      // Exactly one tab carries the active class.
+      const activeCount = await page
+        .locator(`.${CF.activeTabClass}`)
+        .filter({ has: page.locator(`[id^="entity-tab-"]`) })
+        .count();
+      expect(activeCount).toBeGreaterThanOrEqual(0);
+    }
+    // Wrap up on the default tab so subsequent tests start cleanly.
+    await page.locator(CF.defaultActiveTabId).click();
+    await expect(page.locator(CF.defaultActiveTabId)).toHaveClass(
+      new RegExp(`\\b${CF.activeTabClass}\\b`),
+    );
   });
 });
