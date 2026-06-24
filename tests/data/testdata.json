@@ -431,8 +431,20 @@
       "newGroupNameInput": "input[placeholder=\"Enter Group Name\"]",
       "newGroupCreateButton": "button#group-save-button",
       "newGroupCancelButton": "button#group-cancel-button",
-      "dataTypeAddButton": "button#custom-data-type-button"
-    }
+      "dataTypeAddButton": "button#custom-data-type-button",
+      "fieldNameTextSpan": "span.field-name-text",
+      "fieldGroupNameSpan": "span.field-group-name",
+      "fieldGroupHeader": ".field-group-header",
+      "fieldGroupDeleteBtn": ".field-group-header button.delete-btn",
+      "deleteFieldConfirmButton": "[id=\"delete-custom-field-confirmation-confirmAction-Yes, Delete-button\"]",
+      "deleteFieldCancelButton": "#delete-custom-field-confirmation-confirmation-close-button",
+      "deleteGroupConfirmButton": "button#delete-group-confirm-btn",
+      "deleteGroupCancelButton": "button#delete-group-cancel-btn",
+      "confirmDialog": ".k-window.k-dialog[role=\"dialog\"]"
+    },
+    "namePrefix": "AutoCF",
+    "groupPrefix": "AutoGrp",
+    "confirmDeleteTitle": "Are you sure?"
   },
   "configurations": {
     "heading": "Configurations",
