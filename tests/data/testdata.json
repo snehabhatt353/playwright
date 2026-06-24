@@ -14,7 +14,8 @@
     "integrationDashboard": "/integration-dashboard",
     "templateBuilder": "/template-builder",
     "solutionsHub": "/solutions-hub",
-    "accessManagement": "/user-management"
+    "accessManagement": "/user-management",
+    "configurations": "/configurations"
   },
   "urlPatterns": {
     "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
@@ -25,7 +26,8 @@
     "integrationDashboard": "\\/integration-dashboard(\\?|$|\\/)",
     "templateBuilder": "\\/template-builder(\\?|$|\\/)",
     "solutionsHub": "\\/solutions-hub(\\?|$|\\/)",
-    "accessManagement": "\\/user-management(\\?|$|\\/)"
+    "accessManagement": "\\/user-management(\\?|$|\\/)",
+    "configurations": "\\/configurations(\\?|$|\\/)"
   },
   "titles": {
     "threatModels": "Threat Models \\| ThreatModeler",
@@ -39,7 +41,8 @@
     "accessManagement": "Access Management \\| ThreatModeler",
     "accessManagementUsers": "Users \\| ThreatModeler",
     "accessManagementGroups": "Groups \\| ThreatModeler",
-    "accessManagementRoles": "Roles \\| ThreatModeler"
+    "accessManagementRoles": "Roles \\| ThreatModeler",
+    "configurations": "Configurations \\| ThreatModeler"
   },
   "timeouts": {
     "test": 180000,
@@ -376,6 +379,16 @@
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
       "ratio": "^[0-9]+\\/[0-9]+$"
+    }
+  },
+  "cloudModeler": {
+    "configurationsHeading": "Configurations",
+    "cloudEnvironmentsLabelPattern": "^Cloud Environments \\(\\d+\\)$",
+    "expectedProviderPatterns": ["GCP", "AWS"],
+    "selectors": {
+      "cloudEnvironmentsHeader": "#integration-group-header-1",
+      "cloudAccountActions": "button[id^=\"integration-third-party-\"]",
+      "syncIcon": "#integration-uodateStatus-img"
     }
   },
   "addThreats": {
