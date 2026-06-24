@@ -381,6 +381,35 @@
       "ratio": "^[0-9]+\\/[0-9]+$"
     }
   },
+  "configurations": {
+    "heading": "Configurations",
+    "tabs": ["Threat Models", "Threats", "Security Requirements", "Test Cases"],
+    "expectedMenuItems": [
+      "Authentication",
+      "SMTP",
+      "Integrations",
+      "LLM Features Defaults",
+      "Threat Model Defaults",
+      "User Management",
+      "Custom Risk Calculation",
+      "Compliance",
+      "AI",
+      "Notifications",
+      "Email Templates",
+      "Custom Fields",
+      "Platform Usage Report",
+      "Status"
+    ],
+    "menuRole": "Configuration Menu",
+    "integrationGroupPatterns": [
+      "^ALM Tools \\(\\d+\\)$",
+      "^Cloud Environments \\(\\d+\\)$",
+      "^LLM Models \\(\\d+\\)$"
+    ],
+    "selectors": {
+      "integrationGroupHeader": "[id^=\"integration-group-header-\"]"
+    }
+  },
   "cloudModeler": {
     "configurationsHeading": "Configurations",
     "cloudEnvironmentsLabelPattern": "^Cloud Environments \\(\\d+\\)$",
