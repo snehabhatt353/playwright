@@ -538,10 +538,22 @@
     "searchPlaceholder": "Search",
     "selectors": {
       "navLink": "a[href=\"/user-management\"]",
+      "navLinkAriaLabel": "a[aria-label=\"Access Management\"]",
       "tab": "[role=\"tab\"]",
+      "tabByIndexTemplate": "li[id^=\"k-tabstrip-tab-\"][id$=\"-{index}\"]",
       "searchInput": "input[placeholder=\"Search\"]",
       "columnHeader": "th[role=\"columnheader\"]",
       "columnTitle": ".k-column-title"
+    },
+    "tabIndex": {
+      "departments": 0,
+      "users": 1,
+      "groups": 2,
+      "rolesAndPermissions": 3
+    },
+    "utf8Samples": {
+      "polish": "Łódź",
+      "spanish": "Año"
     }
   },
   "solutionsHub": {
