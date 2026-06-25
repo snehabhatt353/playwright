@@ -143,7 +143,7 @@ test.describe("Access Management", () => {
   // with counts.
   // -------------------------------------------------------------------------
   test.describe("Page chrome", () => {
-    test("URL, title, h1 and four-tab navigation are present", async ({ page }, info) => {
+    test("C14216 C14281 C14369 URL, title, h1 and four-tab navigation are present", async ({ page }, info) => {
       caseIds(info, "C14216", "C14281", "C14369");
       await login(page);
       await step(page, info, 1, "after-login");
@@ -183,7 +183,7 @@ test.describe("Access Management", () => {
   // user count and group count columns).
   // -------------------------------------------------------------------------
   test.describe("Departments tab", () => {
-    test("Renders documented columns Name/Users/Groups/Licenses used", async ({ page }, info) => {
+    test("C14281 C14285 C14286 Departments columns Name/Users/Groups/Licenses used", async ({ page }, info) => {
       caseIds(info, "C14281", "C14285", "C14286");
       await login(page);
       await gotoAccessManagement(page);
@@ -204,7 +204,7 @@ test.describe("Access Management", () => {
   // The activation flow swaps the page title to "Users | ThreatModeler".
   // -------------------------------------------------------------------------
   test.describe("Users tab", () => {
-    test("Page title swaps and columns Name/Status/Email/Department/Group render", async ({ page }, info) => {
+    test("C14216 C14221 Users tab title swap + columns Name/Status/Email/Department/Group", async ({ page }, info) => {
       caseIds(info, "C14216", "C14221");
       await login(page);
       await gotoAccessManagement(page);
@@ -223,7 +223,7 @@ test.describe("Access Management", () => {
   // Groups tab -- C14369 (panel functionalities), C14370 (group search).
   // -------------------------------------------------------------------------
   test.describe("Groups tab", () => {
-    test("Page title swaps and columns Name/Department/Users render", async ({ page }, info) => {
+    test("C14369 C14370 Groups tab title swap + columns Name/Department/Users", async ({ page }, info) => {
       caseIds(info, "C14369", "C14370");
       await login(page);
       await gotoAccessManagement(page);
@@ -245,7 +245,7 @@ test.describe("Access Management", () => {
   // and leave matrix verification to a fixture-backed follow-up suite.
   // -------------------------------------------------------------------------
   test.describe("Roles & Permissions tab", () => {
-    test("Page title swaps and columns Name/Description/Type render", async ({ page }, info) => {
+    test("C14401 Roles & Permissions tab title swap + columns Name/Description/Type", async ({ page }, info) => {
       // Anchor cases for this tab don't have a unique TestRail id in the
       // export (the Permission matrix uses C14401+ but those are per-role
       // assertions, not column shape). Annotate with the section anchor.
@@ -274,7 +274,7 @@ test.describe("Access Management", () => {
   // four tabs at the page level, so a single test covers every tab.
   // -------------------------------------------------------------------------
   test.describe("Search input", () => {
-    test("Accepts ASCII text and clears", async ({ page }, info) => {
+    test("C14217 C14218 C14282 Search accepts ASCII text and clears", async ({ page }, info) => {
       caseIds(info, "C14217", "C14218", "C14282");
       await login(page);
       await gotoAccessManagement(page);
@@ -298,7 +298,7 @@ test.describe("Access Management", () => {
       await step(page, info, 3, "search-cleared");
     });
 
-    test("Accepts UTF-8 characters (Polish/Spanish samples from testdata)", async ({ page }, info) => {
+    test("C98438 C98442 Search accepts UTF-8 characters (Polish/Spanish samples from testdata)", async ({ page }, info) => {
       caseIds(info, "C98438", "C98442");
       await login(page);
       await gotoAccessManagement(page);
