@@ -374,7 +374,15 @@
       "threatTrendsCard": ".tm-dashboard-card.custom-padding:not(.text-center)",
       "aiWidget": ".ai-widget-container",
       "filterButton": "button[aria-label=\"Open Filter\"]",
-      "clearFilterButton": "#dashboard-filterClear-button"
+      "filterButtonId": "#dashboard-filter-button",
+      "clearFilterButton": "#dashboard-filterClear-button",
+      "navButtonId": "#dashboards-menu",
+      "overviewMenuItemId": "#create-newDashboard-menu",
+      "pageRootId": "#dashboard",
+      "topTenContainerId": "#dashboard-top10Sr-div",
+      "topTenRowTemplate": "#dashboard-modelOpen-{index}-div",
+      "topTenRiskTemplate": "#dashboard-risk{index}-div",
+      "topTenNameClass": ".tm-word-length"
     },
     "patterns": {
       "nonNegativeInt": "^[0-9]+$",
