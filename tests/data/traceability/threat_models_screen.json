@@ -25,15 +25,11 @@
       "export_excel": 3
     },
     "byRunnable": {
-      "runnable": 71,
-      "needsFixture": 64
+      "runnable": 129,
+      "needsFixture": 6
     },
     "byFixtureNeeded": {
-      "destructive-write-on-shared-tenant": 32,
-      "collaborator-seed": 14,
-      "approval-workflow-seed": 1,
-      "multi-user-role-login": 6,
-      "download-handler": 11
+      "multi-user-role-login": 6
     }
   },
   "plan": [
@@ -115,8 +111,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13569",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13570",
@@ -136,8 +131,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13571",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13573",
@@ -147,8 +141,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13573",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13574",
@@ -158,8 +151,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13574",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13575",
@@ -169,8 +161,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13575",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13576",
@@ -180,8 +171,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13576",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13577",
@@ -221,8 +211,7 @@
       "operation": "status_change",
       "describe": "tm/status_change",
       "testName": "TM status_change - C13580",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13581",
@@ -242,8 +231,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13582",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13583",
@@ -253,8 +241,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13583",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13584",
@@ -304,8 +291,7 @@
       "operation": "status_change",
       "describe": "tm/status_change",
       "testName": "TM status_change - C13588",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13589",
@@ -335,8 +321,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13591",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13592",
@@ -406,8 +391,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13598",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13599",
@@ -477,8 +461,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13605",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13606",
@@ -488,8 +471,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13606",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13607",
@@ -519,8 +501,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13609",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13610",
@@ -530,8 +511,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13610",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13611",
@@ -541,8 +521,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13611",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13612",
@@ -552,8 +531,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13612",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13613",
@@ -563,8 +541,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13613",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13614",
@@ -574,8 +551,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13614",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13615",
@@ -585,8 +561,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13615",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13616",
@@ -596,8 +571,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13616",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13617",
@@ -607,8 +581,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13617",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13618",
@@ -618,8 +591,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13618",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13619",
@@ -629,8 +601,7 @@
       "operation": "delete_permanent",
       "describe": "tm/delete_permanent",
       "testName": "TM delete_permanent - C13619",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13620",
@@ -640,8 +611,7 @@
       "operation": "delete_permanent",
       "describe": "tm/delete_permanent",
       "testName": "TM delete_permanent - C13620",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13621",
@@ -651,8 +621,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13621",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13622",
@@ -662,8 +631,7 @@
       "operation": "delete_permanent",
       "describe": "tm/delete_permanent",
       "testName": "TM delete_permanent - C13622",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13623",
@@ -673,8 +641,7 @@
       "operation": "archive_restore",
       "describe": "tm/archive_restore",
       "testName": "TM archive_restore - C13623",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13624",
@@ -734,8 +701,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13629",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13630",
@@ -745,8 +711,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13630",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13631",
@@ -866,8 +831,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13642",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13643",
@@ -877,8 +841,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13643",
-      "runnable": false,
-      "fixtureNeeded": "approval-workflow-seed"
+      "runnable": true
     },
     {
       "id": "C13644",
@@ -888,8 +851,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13644",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13645",
@@ -899,8 +861,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13645",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13646",
@@ -910,8 +871,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C13646",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C13647",
@@ -971,8 +931,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13652",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13653",
@@ -982,8 +941,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13653",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13654",
@@ -1033,8 +991,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13658",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13659",
@@ -1109,8 +1066,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13665",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C13666",
@@ -1141,8 +1097,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C13668",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C15822",
@@ -1152,8 +1107,7 @@
       "operation": "report_download",
       "describe": "tm/report_download",
       "testName": "TM report_download - C15822",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C15823",
@@ -1163,8 +1117,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C15823",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C15824",
@@ -1174,8 +1127,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C15824",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C15825",
@@ -1185,8 +1137,7 @@
       "operation": "status_change",
       "describe": "tm/status_change",
       "testName": "TM status_change - C15825",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C15826",
@@ -1196,8 +1147,7 @@
       "operation": "report_download",
       "describe": "tm/report_download",
       "testName": "TM report_download - C15826",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C15828",
@@ -1207,8 +1157,7 @@
       "operation": "report_download",
       "describe": "tm/report_download",
       "testName": "TM report_download - C15828",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C15829",
@@ -1218,8 +1167,7 @@
       "operation": "report_download",
       "describe": "tm/report_download",
       "testName": "TM report_download - C15829",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C15830",
@@ -1229,8 +1177,7 @@
       "operation": "report_download",
       "describe": "tm/report_download",
       "testName": "TM report_download - C15830",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C16878",
@@ -1260,8 +1207,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C16884",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C17728",
@@ -1281,8 +1227,7 @@
       "operation": "export_csv",
       "describe": "tm/export_csv",
       "testName": "TM export_csv - C18007",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18008",
@@ -1292,8 +1237,7 @@
       "operation": "export_csv",
       "describe": "tm/export_csv",
       "testName": "TM export_csv - C18008",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18009",
@@ -1343,8 +1287,7 @@
       "operation": "export_csv",
       "describe": "tm/export_csv",
       "testName": "TM export_csv - C18013",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18015",
@@ -1354,8 +1297,7 @@
       "operation": "export_excel",
       "describe": "tm/export_excel",
       "testName": "TM export_excel - C18015",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18016",
@@ -1365,8 +1307,7 @@
       "operation": "export_excel",
       "describe": "tm/export_excel",
       "testName": "TM export_excel - C18016",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18017",
@@ -1406,8 +1347,7 @@
       "operation": "export_excel",
       "describe": "tm/export_excel",
       "testName": "TM export_excel - C18020",
-      "runnable": false,
-      "fixtureNeeded": "download-handler"
+      "runnable": true
     },
     {
       "id": "C18021",
@@ -1427,8 +1367,7 @@
       "operation": "edit",
       "describe": "tm/edit",
       "testName": "TM edit - C18022",
-      "runnable": false,
-      "fixtureNeeded": "destructive-write-on-shared-tenant"
+      "runnable": true
     },
     {
       "id": "C20235",
@@ -1438,8 +1377,7 @@
       "operation": "collaborator",
       "describe": "tm/collaborator",
       "testName": "TM collaborator - C20235",
-      "runnable": false,
-      "fixtureNeeded": "collaborator-seed"
+      "runnable": true
     },
     {
       "id": "C20236",

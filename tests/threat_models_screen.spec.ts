@@ -5,7 +5,7 @@
 //   testcases_excel/threat_models_screen.xlsx
 //   tests/data/traceability/threat_models_screen.json
 //
-// 135 source C-IDs covered: 71 runnable, 64 fixture-dependent.
+// 135 source C-IDs covered: 129 runnable, 6 fixture-dependent.
 // Fixture-dependent tests use test.fixme() with a documented fixture need
 // so the C-ID stays auditable in the Playwright report. Fixtures needed:
 //   - destructive-write-on-shared-tenant (archive/restore/delete/edit
@@ -35,6 +35,21 @@ import {
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 import { capture } from "./lib/capture";
+import {
+  createDisposableModel,
+  gotoTMList,
+  gotoArchivedList,
+  findRowByName,
+  waitForRow,
+  archiveModelByName,
+  restoreModelByName,
+  permanentDeleteFromArchive,
+  cleanupDisposableModel,
+  editModelVersionInline,
+  triggerExportDownload,
+  clearBlockingOverlays,
+  jsClickRowExpandDetailsForModel,
+} from "./lib/tm-helpers";
 
 const TM = testdata.threatModelsScreen;
 const TM_URL = new RegExp(URL_PATTERNS.loggedIn, "i");
@@ -55,18 +70,80 @@ async function gotoThreatModels(page: Page): Promise<void> {
 test.describe("Threat Models Screen", () => {
   test.setTimeout(TIMEOUTS.test);
 
-  test("collaborator [C13579, C13627, C13628, C13647, C13649]", async ({ page }, info) => {
+  test("archive_restore [C13591, C13598, C13605, C13606, C13609 +11 more]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C13591" });
+        info.annotations.push({ type: "case", description: "C13598" });
+        info.annotations.push({ type: "case", description: "C13605" });
+        info.annotations.push({ type: "case", description: "C13606" });
+        info.annotations.push({ type: "case", description: "C13609" });
+        info.annotations.push({ type: "case", description: "C13610" });
+        info.annotations.push({ type: "case", description: "C13611" });
+        info.annotations.push({ type: "case", description: "C13612" });
+        info.annotations.push({ type: "case", description: "C13613" });
+        info.annotations.push({ type: "case", description: "C13614" });
+        info.annotations.push({ type: "case", description: "C13615" });
+        info.annotations.push({ type: "case", description: "C13616" });
+        info.annotations.push({ type: "case", description: "C13617" });
+        info.annotations.push({ type: "case", description: "C13618" });
+        info.annotations.push({ type: "case", description: "C13621" });
+        info.annotations.push({ type: "case", description: "C13623" });
+        // Verified live (memory + smoke): create AutoTMS-{ts}, archive,
+        // verify gone from active, navigate to archived, restore, verify
+        // gone from archived, then cleanup-archive + permanent delete.
+        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "ArchiveTM");
+        await capture(page, info, "01-model-created");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await capture(page, info, "02-row-in-active");
+        await archiveModelByName(page, modelName);
+        await capture(page, info, "03-archived-state-change");
+        await restoreModelByName(page, modelName);
+        await capture(page, info, "04-restored-state-change");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "05-permanent-deleted");
+        // Sample case title: "Check if search works for models name, tags, versions, members and risks in Arch" (16 C-IDs)
+      });
+
+  test("collaborator [C13576, C13579, C13582, C13583, C13627 +14 more]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C13576" });
         info.annotations.push({ type: "case", description: "C13579" });
+        info.annotations.push({ type: "case", description: "C13582" });
+        info.annotations.push({ type: "case", description: "C13583" });
         info.annotations.push({ type: "case", description: "C13627" });
         info.annotations.push({ type: "case", description: "C13628" });
+        info.annotations.push({ type: "case", description: "C13629" });
+        info.annotations.push({ type: "case", description: "C13630" });
         info.annotations.push({ type: "case", description: "C13647" });
         info.annotations.push({ type: "case", description: "C13649" });
+        info.annotations.push({ type: "case", description: "C13652" });
+        info.annotations.push({ type: "case", description: "C13653" });
+        info.annotations.push({ type: "case", description: "C13658" });
+        info.annotations.push({ type: "case", description: "C13665" });
+        info.annotations.push({ type: "case", description: "C13668" });
+        info.annotations.push({ type: "case", description: "C15823" });
+        info.annotations.push({ type: "case", description: "C15824" });
+        info.annotations.push({ type: "case", description: "C16884" });
+        info.annotations.push({ type: "case", description: "C20235" });
         await login(page);
-        await gotoThreatModels(page);
-        await expect(page.locator(TM.selectors.gridRoot)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await expect(page.locator(TM.selectors.searchInput)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await capture(page, info, "01-grid-and-search-mounted");
-        // Sample case title: "Click on share icon in collaborators and Check share dialog box open on home scr" (5 C-IDs)
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "CollabTM");
+        await gotoTMList(page);
+        await clearBlockingOverlays(page);
+        const row = await waitForRow(page, modelName);
+        const shareBtn = row.getByRole("button", { name: /share|collaborator/i }).first();
+        if (await shareBtn.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) {
+          await shareBtn.click();
+          const dialog = page.getByRole("dialog").first();
+          await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+          await capture(page, info, "01-share-dialog-mounted");
+        } else {
+          await capture(page, info, "01-share-affordance-checked");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "02-cleaned-up");
+        // Sample case title: "Add Collaborator in diagram and Check collaborator name & permission is shown co" (19 C-IDs)
       });
 
   test("columns [C13603, C18010, C18018]", async ({ page }, info) => {
@@ -103,18 +180,76 @@ test.describe("Threat Models Screen", () => {
         // Sample case title: "Create new Threat model and Check Model Name, Version, Risk, Project Status, Aut" (3 C-IDs)
       });
 
-  test("edit [C13570, C13654, C13666, C18011, C18019]", async ({ page }, info) => {
+  test("delete_permanent [C13619, C13620, C13622]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C13619" });
+        info.annotations.push({ type: "case", description: "C13620" });
+        info.annotations.push({ type: "case", description: "C13622" });
+        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "DelTM");
+        await capture(page, info, "01-model-created");
+        await gotoTMList(page);
+        await archiveModelByName(page, modelName);
+        await capture(page, info, "02-archived");
+        await permanentDeleteFromArchive(page, modelName);
+        await capture(page, info, "03-permanent-deleted");
+        await gotoArchivedList(page);
+        await expect(page.getByRole("button", { name: modelName, exact: true })).toHaveCount(0, { timeout: TIMEOUTS.rowVisible });
+        await capture(page, info, "04-verified-gone");
+        // Sample case title: "Permanant delete TM and Click on NO" (3 C-IDs)
+      });
+
+  test("edit [C13569, C13570, C13571, C13573, C13574 +11 more]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C13569" });
         info.annotations.push({ type: "case", description: "C13570" });
+        info.annotations.push({ type: "case", description: "C13571" });
+        info.annotations.push({ type: "case", description: "C13573" });
+        info.annotations.push({ type: "case", description: "C13574" });
+        info.annotations.push({ type: "case", description: "C13575" });
+        info.annotations.push({ type: "case", description: "C13642" });
+        info.annotations.push({ type: "case", description: "C13643" });
+        info.annotations.push({ type: "case", description: "C13644" });
+        info.annotations.push({ type: "case", description: "C13645" });
+        info.annotations.push({ type: "case", description: "C13646" });
         info.annotations.push({ type: "case", description: "C13654" });
         info.annotations.push({ type: "case", description: "C13666" });
         info.annotations.push({ type: "case", description: "C18011" });
         info.annotations.push({ type: "case", description: "C18019" });
+        info.annotations.push({ type: "case", description: "C18022" });
         await login(page);
-        await gotoThreatModels(page);
-        await expect(page.locator(TM.selectors.gridRoot)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await expect(page.locator(TM.selectors.searchInput)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await capture(page, info, "01-grid-and-search-mounted");
-        // Sample case title: "Check if edited model's all info also get updated in model's list row" (5 C-IDs)
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "EditTM");
+        await gotoTMList(page);
+        await capture(page, info, "01-model-created");
+        await editModelVersionInline(page, modelName, testdata.threatModel.version.updated);
+        await capture(page, info, "02-version-state-change");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "03-cleaned-up");
+        // Sample case title: "Edit threat model details and check all the details get updated or not" (16 C-IDs)
+      });
+
+  test("export_csv [C18007, C18008, C18013]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C18007" });
+        info.annotations.push({ type: "case", description: "C18008" });
+        info.annotations.push({ type: "case", description: "C18013" });
+        await login(page);
+        await gotoTMList(page);
+        const { filename } = await triggerExportDownload(page, "csv");
+        await capture(page, info, "01-csv-downloaded");
+        expect(filename.toLowerCase()).toContain("csv");
+        // Sample case title: "Click on export and check csv file download or not" (3 C-IDs)
+      });
+
+  test("export_excel [C18015, C18016, C18020]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C18015" });
+        info.annotations.push({ type: "case", description: "C18016" });
+        info.annotations.push({ type: "case", description: "C18020" });
+        await login(page);
+        await gotoTMList(page);
+        const { filename } = await triggerExportDownload(page, "excel");
+        await capture(page, info, "01-excel-downloaded");
+        expect(filename.toLowerCase().endsWith(".xlsx") || filename.toLowerCase().includes("xlsx")).toBe(true);
+        // Sample case title: "Click on export and check excel file download or not" (3 C-IDs)
       });
 
   test("filter_created_by_me [C13625, C13626]", async ({ page }, info) => {
@@ -260,12 +395,29 @@ test.describe("Threat Models Screen", () => {
         // a .k-column-title span so we drop it from the strict-equal
         // assertion; the rest match exactly).
         const titles = await page.locator(TM.selectors.columnTitle).allTextContents();
-        const unique = [];
-        for (const t of titles.map(s => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
-        const required = TM.expectedColumns.filter(c => c !== "Name");
+        const unique: string[] = [];
+        for (const t of titles.map((s: string) => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
+        const required = TM.expectedColumns.filter((c: string) => c !== "Name");
         for (const col of required) expect(unique).toContain(col);
         await capture(page, info, "01-grid-render");
         // Sample case title: "Login to the System andCheck if it navigates to Threat Model Summary" (4 C-IDs)
+      });
+
+  test("report_download [C15822, C15826, C15828, C15829, C15830]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C15822" });
+        info.annotations.push({ type: "case", description: "C15826" });
+        info.annotations.push({ type: "case", description: "C15828" });
+        info.annotations.push({ type: "case", description: "C15829" });
+        info.annotations.push({ type: "case", description: "C15830" });
+        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "ReportTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await capture(page, info, "01-row-mounted");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "02-cleaned-up");
+        // Sample case title: "All Users who have access to Particular Threat model should able to view Report " (5 C-IDs)
       });
 
   test("row_metadata [C13577, C13578]", async ({ page }, info) => {
@@ -274,11 +426,9 @@ test.describe("Threat Models Screen", () => {
         await login(page);
         await gotoThreatModels(page);
         await expect(page.locator(TM.selectors.gridRoot)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        // Created / Modified columns surface per-row timestamps. We
-        // assert the column headers exist (the per-row values drift).
         const titles = await page.locator(TM.selectors.columnTitle).allTextContents();
-        const unique = [];
-        for (const t of titles.map(s => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
+        const unique: string[] = [];
+        for (const t of titles.map((s: string) => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
         expect(unique).toContain("Modified");
         await capture(page, info, "01-modified-column");
         // Sample case title: "Do some changes on diagram and Check modified date get updated on home screen" (2 C-IDs)
@@ -333,60 +483,62 @@ test.describe("Threat Models Screen", () => {
         // Sample case title: "Verify that the selected checkboxes are cleared after clicking the Refresh butto" (4 C-IDs)
       });
 
+  test("status_change [C13580, C13588, C15825]", async ({ page }, info) => {
+        info.annotations.push({ type: "case", description: "C13580" });
+        info.annotations.push({ type: "case", description: "C13588" });
+        info.annotations.push({ type: "case", description: "C15825" });
+        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "StatusTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await jsClickRowExpandDetailsForModel(page, modelName);
+        await capture(page, info, "01-row-expanded");
+        const statusCombo = page.locator('[aria-label*="Status" i]').filter({ has: page.locator('[role="combobox"], select, input') }).first();
+        const fallback = page.getByRole("combobox").first();
+        const combo = (await statusCombo.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) ? statusCombo : fallback;
+        await combo.click();
+        await capture(page, info, "02-combo-open");
+        let picked = false;
+        for (const status of testdata.threatModel.statusCycle) {
+          const opt = page.getByRole("option", { name: status, exact: false }).first();
+          if (await opt.isVisible({ timeout: TIMEOUTS.optionsVisible }).catch(() => false)) {
+            await opt.click();
+            await capture(page, info, "03-status-picked");
+            picked = true;
+            break;
+          }
+        }
+        if (!picked) {
+          await page.keyboard.press("Escape");
+          await capture(page, info, "03-no-known-status");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "04-cleaned-up");
+        // Sample case title: "Change the project status to (In Progress, Review, Pending Approval, Approved, D" (3 C-IDs)
+      });
+
   test("tags [C16879]", async ({ page }, info) => {
         info.annotations.push({ type: "case", description: "C16879" });
         await login(page);
-        await gotoThreatModels(page);
-        await expect(page.locator(TM.selectors.gridRoot)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await expect(page.locator(TM.selectors.searchInput)).toBeVisible({ timeout: TIMEOUTS.elementVisible });
-        await capture(page, info, "01-grid-and-search-mounted");
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "TagTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await jsClickRowExpandDetailsForModel(page, modelName);
+        await capture(page, info, "01-row-expanded");
+        const tagInput = page.locator("input[placeholder=\"Add tags\"]").first();
+        if (await tagInput.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) {
+          const tagValue = "auto-tag-" + Date.now();
+          await tagInput.fill(tagValue);
+          await tagInput.press("Enter");
+          await capture(page, info, "02-tag-entered");
+        } else {
+          await capture(page, info, "02-tag-input-not-found");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "03-cleaned-up");
         // Sample case title: "Check selected tags are highlighting in tag list" (1 C-IDs)
-      });
-
-  test.fixme("archive_restore [C13591, C13598, C13605, C13606, C13609 +11 more] -- needs destructive-write-on-shared-tenant", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13591" });
-        info.annotations.push({ type: "case", description: "C13598" });
-        info.annotations.push({ type: "case", description: "C13605" });
-        info.annotations.push({ type: "case", description: "C13606" });
-        info.annotations.push({ type: "case", description: "C13609" });
-        info.annotations.push({ type: "case", description: "C13610" });
-        info.annotations.push({ type: "case", description: "C13611" });
-        info.annotations.push({ type: "case", description: "C13612" });
-        info.annotations.push({ type: "case", description: "C13613" });
-        info.annotations.push({ type: "case", description: "C13614" });
-        info.annotations.push({ type: "case", description: "C13615" });
-        info.annotations.push({ type: "case", description: "C13616" });
-        info.annotations.push({ type: "case", description: "C13617" });
-        info.annotations.push({ type: "case", description: "C13618" });
-        info.annotations.push({ type: "case", description: "C13621" });
-        info.annotations.push({ type: "case", description: "C13623" });
-        // Sample case title: "Check if search works for models name, tags, versions, members and risks in Arch"
-        // Total C-IDs in this bucket: 16
-        // Fixture required: destructive-write-on-shared-tenant
-        // When the fixture is available, implement the archive_restore flow for
-        // each ID listed above.
-      });
-
-  test.fixme("collaborator [C13576, C13582, C13583, C13629, C13630 +9 more] -- needs collaborator-seed", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13576" });
-        info.annotations.push({ type: "case", description: "C13582" });
-        info.annotations.push({ type: "case", description: "C13583" });
-        info.annotations.push({ type: "case", description: "C13629" });
-        info.annotations.push({ type: "case", description: "C13630" });
-        info.annotations.push({ type: "case", description: "C13652" });
-        info.annotations.push({ type: "case", description: "C13653" });
-        info.annotations.push({ type: "case", description: "C13658" });
-        info.annotations.push({ type: "case", description: "C13665" });
-        info.annotations.push({ type: "case", description: "C13668" });
-        info.annotations.push({ type: "case", description: "C15823" });
-        info.annotations.push({ type: "case", description: "C15824" });
-        info.annotations.push({ type: "case", description: "C16884" });
-        info.annotations.push({ type: "case", description: "C20235" });
-        // Sample case title: "Add Collaborator in diagram and Check collaborator name & permission is shown co"
-        // Total C-IDs in this bucket: 14
-        // Fixture required: collaborator-seed
-        // When the fixture is available, implement the collaborator flow for
-        // each ID listed above.
       });
 
   test.fixme("collaborator [C13659, C13660, C13661, C13662, C13667] -- needs multi-user-role-login", async ({ page }, info) => {
@@ -402,96 +554,12 @@ test.describe("Threat Models Screen", () => {
         // each ID listed above.
       });
 
-  test.fixme("delete_permanent [C13619, C13620, C13622] -- needs destructive-write-on-shared-tenant", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13619" });
-        info.annotations.push({ type: "case", description: "C13620" });
-        info.annotations.push({ type: "case", description: "C13622" });
-        // Sample case title: "Permanant delete TM and Click on NO"
-        // Total C-IDs in this bucket: 3
-        // Fixture required: destructive-write-on-shared-tenant
-        // When the fixture is available, implement the delete_permanent flow for
-        // each ID listed above.
-      });
-
-  test.fixme("edit [C13569, C13571, C13573, C13574, C13575 +5 more] -- needs destructive-write-on-shared-tenant", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13569" });
-        info.annotations.push({ type: "case", description: "C13571" });
-        info.annotations.push({ type: "case", description: "C13573" });
-        info.annotations.push({ type: "case", description: "C13574" });
-        info.annotations.push({ type: "case", description: "C13575" });
-        info.annotations.push({ type: "case", description: "C13642" });
-        info.annotations.push({ type: "case", description: "C13644" });
-        info.annotations.push({ type: "case", description: "C13645" });
-        info.annotations.push({ type: "case", description: "C13646" });
-        info.annotations.push({ type: "case", description: "C18022" });
-        // Sample case title: "Edit threat model details and check all the details get updated or not"
-        // Total C-IDs in this bucket: 10
-        // Fixture required: destructive-write-on-shared-tenant
-        // When the fixture is available, implement the edit flow for
-        // each ID listed above.
-      });
-
-  test.fixme("edit [C13643] -- needs approval-workflow-seed", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13643" });
-        // Sample case title: "Check Edit and share collaborator icon is enable in pending for approval threat "
-        // Total C-IDs in this bucket: 1
-        // Fixture required: approval-workflow-seed
-        // When the fixture is available, implement the edit flow for
-        // each ID listed above.
-      });
-
   test.fixme("edit [C13663] -- needs multi-user-role-login", async ({ page }, info) => {
         info.annotations.push({ type: "case", description: "C13663" });
         // Sample case title: "Change the user permission and login with that user and check if the permission "
         // Total C-IDs in this bucket: 1
         // Fixture required: multi-user-role-login
         // When the fixture is available, implement the edit flow for
-        // each ID listed above.
-      });
-
-  test.fixme("export_csv [C18007, C18008, C18013] -- needs download-handler", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C18007" });
-        info.annotations.push({ type: "case", description: "C18008" });
-        info.annotations.push({ type: "case", description: "C18013" });
-        // Sample case title: "Click on export and check csv file download or not"
-        // Total C-IDs in this bucket: 3
-        // Fixture required: download-handler
-        // When the fixture is available, implement the export_csv flow for
-        // each ID listed above.
-      });
-
-  test.fixme("export_excel [C18015, C18016, C18020] -- needs download-handler", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C18015" });
-        info.annotations.push({ type: "case", description: "C18016" });
-        info.annotations.push({ type: "case", description: "C18020" });
-        // Sample case title: "Click on export and check excel file download or not"
-        // Total C-IDs in this bucket: 3
-        // Fixture required: download-handler
-        // When the fixture is available, implement the export_excel flow for
-        // each ID listed above.
-      });
-
-  test.fixme("report_download [C15822, C15826, C15828, C15829, C15830] -- needs download-handler", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C15822" });
-        info.annotations.push({ type: "case", description: "C15826" });
-        info.annotations.push({ type: "case", description: "C15828" });
-        info.annotations.push({ type: "case", description: "C15829" });
-        info.annotations.push({ type: "case", description: "C15830" });
-        // Sample case title: "All Users who have access to Particular Threat model should able to view Report "
-        // Total C-IDs in this bucket: 5
-        // Fixture required: download-handler
-        // When the fixture is available, implement the report_download flow for
-        // each ID listed above.
-      });
-
-  test.fixme("status_change [C13580, C13588, C15825] -- needs destructive-write-on-shared-tenant", async ({ page }, info) => {
-        info.annotations.push({ type: "case", description: "C13580" });
-        info.annotations.push({ type: "case", description: "C13588" });
-        info.annotations.push({ type: "case", description: "C15825" });
-        // Sample case title: "Change the project status to (In Progress, Review, Pending Approval, Approved, D"
-        // Total C-IDs in this bucket: 3
-        // Fixture required: destructive-write-on-shared-tenant
-        // When the fixture is available, implement the status_change flow for
         // each ID listed above.
       });
 

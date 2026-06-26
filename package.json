@@ -14,6 +14,7 @@
     "test:component": "playwright test tests/component-create.spec.ts",
     "test:sr": "playwright test tests/securityrequirement-create.spec.ts",
     "test:tc": "playwright test tests/testcase-create.spec.ts",
+    "test:tm-screen": "playwright test tests/threat_models_screen.spec.ts --workers=1",
     "report": "playwright show-report"
   },
   "devDependencies": {

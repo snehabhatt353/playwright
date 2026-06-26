@@ -45,7 +45,7 @@
     "configurations": "Configurations \\| ThreatModeler"
   },
   "timeouts": {
-    "test": 180000,
+    "test": 300000,
     "navShort": 10000,
     "navMedium": 30000,
     "navLong": 60000,

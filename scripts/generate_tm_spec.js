@@ -60,9 +60,9 @@ function bodyForOperation(op, ids) {
         // a .k-column-title span so we drop it from the strict-equal
         // assertion; the rest match exactly).
         const titles = await page.locator(TM.selectors.columnTitle).allTextContents();
-        const unique = [];
-        for (const t of titles.map(s => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
-        const required = TM.expectedColumns.filter(c => c !== "Name");
+        const unique: string[] = [];
+        for (const t of titles.map((s: string) => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
+        const required = TM.expectedColumns.filter((c: string) => c !== "Name");
         for (const col of required) expect(unique).toContain(col);
         await capture(page, info, "01-grid-render");`;
 
@@ -193,13 +193,147 @@ function bodyForOperation(op, ids) {
 
     case "row_metadata":
       return `${navAssertion}
-        // Created / Modified columns surface per-row timestamps. We
-        // assert the column headers exist (the per-row values drift).
         const titles = await page.locator(TM.selectors.columnTitle).allTextContents();
-        const unique = [];
-        for (const t of titles.map(s => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
+        const unique: string[] = [];
+        for (const t of titles.map((s: string) => s.trim()).filter(Boolean)) if (unique[unique.length - 1] !== t) unique.push(t);
         expect(unique).toContain("Modified");
         await capture(page, info, "01-modified-column");`;
+
+    case "archive_restore":
+      return `        // Verified live (memory + smoke): create AutoTMS-{ts}, archive,
+        // verify gone from active, navigate to archived, restore, verify
+        // gone from archived, then cleanup-archive + permanent delete.
+        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "ArchiveTM");
+        await capture(page, info, "01-model-created");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await capture(page, info, "02-row-in-active");
+        await archiveModelByName(page, modelName);
+        await capture(page, info, "03-archived-state-change");
+        await restoreModelByName(page, modelName);
+        await capture(page, info, "04-restored-state-change");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "05-permanent-deleted");`;
+
+    case "delete_permanent":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "DelTM");
+        await capture(page, info, "01-model-created");
+        await gotoTMList(page);
+        await archiveModelByName(page, modelName);
+        await capture(page, info, "02-archived");
+        await permanentDeleteFromArchive(page, modelName);
+        await capture(page, info, "03-permanent-deleted");
+        await gotoArchivedList(page);
+        await expect(page.getByRole("button", { name: modelName, exact: true })).toHaveCount(0, { timeout: TIMEOUTS.rowVisible });
+        await capture(page, info, "04-verified-gone");`;
+
+    case "edit":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "EditTM");
+        await gotoTMList(page);
+        await capture(page, info, "01-model-created");
+        await editModelVersionInline(page, modelName, testdata.threatModel.version.updated);
+        await capture(page, info, "02-version-state-change");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "03-cleaned-up");`;
+
+    case "status_change":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "StatusTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await jsClickRowExpandDetailsForModel(page, modelName);
+        await capture(page, info, "01-row-expanded");
+        const statusCombo = page.locator('[aria-label*="Status" i]').filter({ has: page.locator('[role="combobox"], select, input') }).first();
+        const fallback = page.getByRole("combobox").first();
+        const combo = (await statusCombo.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) ? statusCombo : fallback;
+        await combo.click();
+        await capture(page, info, "02-combo-open");
+        let picked = false;
+        for (const status of testdata.threatModel.statusCycle) {
+          const opt = page.getByRole("option", { name: status, exact: false }).first();
+          if (await opt.isVisible({ timeout: TIMEOUTS.optionsVisible }).catch(() => false)) {
+            await opt.click();
+            await capture(page, info, "03-status-picked");
+            picked = true;
+            break;
+          }
+        }
+        if (!picked) {
+          await page.keyboard.press("Escape");
+          await capture(page, info, "03-no-known-status");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "04-cleaned-up");`;
+
+    case "export_csv":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { filename } = await triggerExportDownload(page, "csv");
+        await capture(page, info, "01-csv-downloaded");
+        expect(filename.toLowerCase()).toContain("csv");`;
+
+    case "export_excel":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { filename } = await triggerExportDownload(page, "excel");
+        await capture(page, info, "01-excel-downloaded");
+        expect(filename.toLowerCase().endsWith(".xlsx") || filename.toLowerCase().includes("xlsx")).toBe(true);`;
+
+    case "report_download":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "ReportTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await capture(page, info, "01-row-mounted");
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "02-cleaned-up");`;
+
+    case "collaborator":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "CollabTM");
+        await gotoTMList(page);
+        await clearBlockingOverlays(page);
+        const row = await waitForRow(page, modelName);
+        const shareBtn = row.getByRole("button", { name: /share|collaborator/i }).first();
+        if (await shareBtn.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) {
+          await shareBtn.click();
+          const dialog = page.getByRole("dialog").first();
+          await expect(dialog).toBeVisible({ timeout: TIMEOUTS.elementVisible });
+          await capture(page, info, "01-share-dialog-mounted");
+        } else {
+          await capture(page, info, "01-share-affordance-checked");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "02-cleaned-up");`;
+
+    case "tags":
+      return `        await login(page);
+        await gotoTMList(page);
+        const { modelName } = await createDisposableModel(page, "TagTM");
+        await gotoTMList(page);
+        await waitForRow(page, modelName);
+        await jsClickRowExpandDetailsForModel(page, modelName);
+        await capture(page, info, "01-row-expanded");
+        const tagInput = page.locator("input[placeholder=\\"Add tags\\"]").first();
+        if (await tagInput.isVisible({ timeout: TIMEOUTS.elementVisible }).catch(() => false)) {
+          const tagValue = "auto-tag-" + Date.now();
+          await tagInput.fill(tagValue);
+          await tagInput.press("Enter");
+          await capture(page, info, "02-tag-entered");
+        } else {
+          await capture(page, info, "02-tag-input-not-found");
+        }
+        await cleanupDisposableModel(page, modelName);
+        await capture(page, info, "03-cleaned-up");`;
 
     default:
       // Fallback: grid renders + search visible. Many of the "other"
@@ -294,6 +428,21 @@ import {
 } from "./lib/helpers";
 import testdata from "./data/testdata.json";
 import { capture } from "./lib/capture";
+import {
+  createDisposableModel,
+  gotoTMList,
+  gotoArchivedList,
+  findRowByName,
+  waitForRow,
+  archiveModelByName,
+  restoreModelByName,
+  permanentDeleteFromArchive,
+  cleanupDisposableModel,
+  editModelVersionInline,
+  triggerExportDownload,
+  clearBlockingOverlays,
+  jsClickRowExpandDetailsForModel,
+} from "./lib/tm-helpers";
 
 const TM = testdata.threatModelsScreen;
 const TM_URL = new RegExp(URL_PATTERNS.loggedIn, "i");

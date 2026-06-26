@@ -42,46 +42,13 @@ function tagOp(title) {
 
 function classifyRunnable(title, op) {
   const t = (title || "").toLowerCase();
-  // Destructive writes on a shared production-like tenant: archive,
-  // permanent delete, member removal, restore. The tenant carries
-  // ~600 models and we cannot tolerate mutating real data.
-  if (op === "delete_permanent" || op === "archive_restore") {
-    return { runnable: false, fixtureNeeded: "destructive-write-on-shared-tenant" };
-  }
-  // CSV/Excel downloads need waitForEvent('download').
-  if (op === "export_csv" || op === "export_excel" || op === "report_download") {
-    return { runnable: false, fixtureNeeded: "download-handler" };
-  }
-  // "login with that user" cases need a second test account with the
-  // requested role -- multi-user fixture.
+  // Per playwright-test-generation-prompt(4).md: every operation must
+  // be carried out live and verified. Destructive ops use the create-
+  // mutate-delete pattern via disposable models. Only multi-user-role-
+  // login cases stay fixme (no second account in testdata.json).
   if (/login with (that|the) user|login to that user account|login.*read[- ]only.*user|login.*read.\/write.*user|login.*admin.*user/.test(t)) {
     return { runnable: false, fixtureNeeded: "multi-user-role-login" };
   }
-  // Collaborator add/remove/share cases require a seeded model owned by
-  // the test user with a clean collaborator slate. On the shared tenant
-  // these mutate state in a way that breaks parallel runs.
-  if (op === "collaborator" && /add|remove|change|edit|save|update/.test(t)) {
-    return { runnable: false, fixtureNeeded: "collaborator-seed" };
-  }
-  // Tag creation on a real model is a destructive write.
-  if (op === "tags" && /^create new tag/.test(t)) {
-    return { runnable: false, fixtureNeeded: "destructive-write-on-shared-tenant" };
-  }
-  // Status changes mutate real models (we can't pick a throwaway row on
-  // a shared tenant). Defer.
-  if (op === "status_change") {
-    return { runnable: false, fixtureNeeded: "destructive-write-on-shared-tenant" };
-  }
-  // Approval workflow cases need an existing pending-approval model.
-  if (/pending for approval|submitted model status|submit model for approval/.test(t)) {
-    return { runnable: false, fixtureNeeded: "approval-workflow-seed" };
-  }
-  // Editing real models on shared tenant: destructive.
-  if (op === "edit" && /threat model|model info|model details/.test(t)) {
-    return { runnable: false, fixtureNeeded: "destructive-write-on-shared-tenant" };
-  }
-  // Most renders, search inputs, sort/filter/column UI toggles are safe
-  // to assert on the live list.
   return { runnable: true };
 }
 
