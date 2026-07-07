@@ -7,6 +7,7 @@
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
+    "test:tm-screen": "playwright test tests/threat_models_screen.spec.ts --workers=1",
     "report": "playwright show-report"
   },
   "devDependencies": {

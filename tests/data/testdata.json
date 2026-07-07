@@ -1,0 +1,118 @@
+{
+  "baseUrl": "https://tmdev.threatmodeler.us",
+  "credentials": {
+    "username": "sbhatt",
+    "password": "Sneha@123"
+  },
+  "paths": {
+    "root": "/",
+    "login": "/idsvr/Account/Login",
+    "threatModels": "/threatmodels",
+    "threatModelsArchived": "/threatmodels/archived"
+  },
+  "urlPatterns": {
+    "loginOrApp": "(\\/idsvr\\/Account\\/Login|\\/threatmodels)",
+    "loggedIn": "\\/threatmodels(\\?|$|\\/)",
+    "threatModelDiagram": "\\/threatmodeldiagram\\/[0-9a-f-]{36}"
+  },
+  "titles": {
+    "threatModels": "Threat Models \\| ThreatModeler",
+    "threatModelDiagram": "Threat Model Diagram \\| ThreatModeler",
+    "threatModelsArchived": "Archived Threat Models \\| ThreatModeler"
+  },
+  "timeouts": {
+    "test": 300000,
+    "navShort": 10000,
+    "navMedium": 30000,
+    "navLong": 60000,
+    "loaderIdle": 30000,
+    "elementVisible": 15000,
+    "buttonEnabled": 10000,
+    "dialogHidden": 30000,
+    "rowVisible": 30000,
+    "optionsVisible": 5000,
+    "typingDelaySlow": 30,
+    "dismissOverlayPause": 300
+  },
+  "roles": {
+    "buttons": {
+      "createNewMenu": "Create new menu",
+      "createNewModel": "Create New Model",
+      "save": "Save",
+      "archive": "Archive",
+      "signIn": "Sign in",
+      "skip": "Skip",
+      "selectRow": "Select Row",
+      "expandDetails": "Expand Details",
+      "threatModelMenu": "Threat Model menu"
+    },
+    "menuItems": { "threatModel": "Threat Model" },
+    "textboxes": {
+      "modelName": "Enter Model Name",
+      "version": "Enter Version",
+      "username": "Username*",
+      "password": "Password*",
+      "versionField": "Version *"
+    },
+    "dialogs": {
+      "createThreatModel": "Create New Threat Model",
+      "archiveThreatModel": "Archive threat model"
+    }
+  },
+  "dismissButtonNames": ["Skip for Now", "Dismiss", "Skip", "Close", "Not now", "Maybe later"],
+  "selectors": {
+    "loaderOverlayVisible": "tm-loader .overlay:visible",
+    "loaderOverlayAll": "tm-loader .overlay",
+    "overlaysToRemove": "ngx-guided-tour, .guided-tour-user-input-mask, .k-overlay, .tour-backdrop, tm-release-note",
+    "archiveIcon": "i[aria-label=\"Archive\"]",
+    "restoreIcon": "i[aria-label=\"Restore\"]",
+    "deleteIcon": "i[aria-label=\"Delete\"]"
+  },
+  "threatModel": {
+    "namePrefixes": {
+      "create": "AutoTM",
+      "edit": "EditTM",
+      "archive": "ArchiveTM",
+      "delete": "DelTM",
+      "status": "StatusTM",
+      "tag": "TagTM",
+      "collab": "CollabTM",
+      "report": "ReportTM"
+    },
+    "search": { "term": "AutoTM" },
+    "version": { "initial": "1.0", "updated": "2.0" },
+    "statusCycle": ["In Progress", "Review", "Starting", "Started", "Work In Prog"]
+  },
+  "threatModelsScreen": {
+    "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
+    "leftNavLabels": {
+      "important": "Important",
+      "createdByMe": "Created by Me",
+      "sharedWithMe": "Shared with Me",
+      "archived": "Archived"
+    },
+    "selectors": {
+      "gridRoot": "#threat-models",
+      "searchInput": "#tmMain-searchModel-input",
+      "refreshButton": "#refresh-threat-models-btn",
+      "exportDropdownTrigger": "#exportFieldDropdown",
+      "exportOptionExcel": "#threatmodels_exportOption_div_0",
+      "exportOptionCsv": "#threatmodels_exportOption_div_1",
+      "createNewMenuButton": "#create-new-menu",
+      "createNewTMExpand": "#create-newTM-expand-menu",
+      "createImportantExpand": "#create-important-expand-menu",
+      "createCreatedByMeExpand": "#create-Createdbyme-expand-menu",
+      "createSharedWithMeExpand": "#create-shareWithMe-expand-menu",
+      "createArchivedExpand": "#create-archived-expand-menu",
+      "rowCheckboxTemplate": "#tm-kendo-checkbox-{index}",
+      "rowExpandTemplate": "#tour-expand-detail-{index}",
+      "columnHeader": "th[role=\"columnheader\"]",
+      "columnTitle": ".k-column-title",
+      "dashboardsMenuButton": "#dashboards-menu",
+      "threatFrameworkLink": "a[aria-label=\"Secure Design Graph\"]",
+      "templateBuilderLink": "a[aria-label=\"Template Builder\"]",
+      "accessManagementLink": "a[href=\"/user-management\"]",
+      "configurationsLink": "a[href=\"/configurations\"]"
+    }
+  }
+}
