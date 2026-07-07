@@ -1,20 +1,12 @@
 {
-  "name": "playwright-threatmodeler-demo",
+  "name": "playwright-mcp-project",
   "version": "1.0.0",
   "private": true,
-  "description": "Playwright E2E tests for tmdev.threatmodeler.us",
+  "description": "Playwright + MCP starter project",
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",
     "test:ui": "playwright test --ui",
-    "test:tm": "playwright test tests/threatmodel-create-edit-delete.spec.ts",
-    "test:tm:create": "playwright test tests/threatmodel-create-edit-delete.spec.ts -g \"creates a new blank\"",
-    "test:tm:edit": "playwright test tests/threatmodel-create-edit-delete.spec.ts -g \"edits an existing\"",
-    "test:tm:archive": "playwright test tests/threatmodel-create-edit-delete.spec.ts -g \"archives\"",
-    "test:component": "playwright test tests/component-create.spec.ts",
-    "test:sr": "playwright test tests/securityrequirement-create.spec.ts",
-    "test:tc": "playwright test tests/testcase-create.spec.ts",
-    "test:tm-screen": "playwright test tests/threat_models_screen.spec.ts --workers=1",
     "report": "playwright show-report"
   },
   "devDependencies": {
