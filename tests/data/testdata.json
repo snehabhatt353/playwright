@@ -83,6 +83,59 @@
     "version": { "initial": "1.0", "updated": "2.0" },
     "statusCycle": ["In Progress", "Review", "Starting", "Started", "Work In Prog"]
   },
+  "login": {
+    "loginPathPattern": "\\/idsvr\\/Account\\/Login",
+    "resetPasswordPath": "/sign-in/reset-password",
+    "loggedInPathPattern": "\\/threatmodels(\\?|$|\\/)",
+    "titles": {
+      "loggedIn": "Threat Models \\| ThreatModeler"
+    },
+    "selectors": {
+      "usernameInput": "#Username",
+      "passwordInput": "#Password",
+      "signInButton": "form.tm-login-form button:has-text(\"Sign In\")",
+      "ssoLink": "a[aria-label=\"sso\"]",
+      "forgotPasswordLink": "a[aria-label=\"reset password\"]",
+      "supportLink": "a[aria-label=\"ThreatModeler support login\"]",
+      "blogLink": "a[aria-label=\"ThreatModeler blog\"]",
+      "websiteLink": "a[aria-label=\"ThreatModeler website\"]",
+      "demoVideoLink": "a[aria-label=\"ThreatModeler demo video\"]",
+      "logo": "img[alt=\"ThreatModeler Logo\"]",
+      "loginError": ".login-error",
+      "usernameInvalid": "#Username.input-validation-error",
+      "passwordInvalid": "#Password.input-validation-error",
+      "resetEmailInput": "input[placeholder=\"Enter your email or username\"]",
+      "resetSubmitButton": "button#reset-password-reset-button",
+      "resetRememberedSpan": "#reset-password-remember-password-span"
+    },
+    "hrefPatterns": {
+      "ssoStartsWith": "/idsvr/External/Challenge?scheme=SAML2",
+      "R006_supportLink": "threatmodeler\\.freshdesk\\.com/support/login",
+      "R007_blogLink": "threatmodeler\\.com/blog",
+      "R008_websiteLink": "threatmodeler\\.(ai|com)/?"
+    },
+    "expected": {
+      "invalidLoginText": "Invalid username or password",
+      "resetGenericConfirmation": "If an account exists for the email address you entered, a password reset link has been sent."
+    },
+    "credentialCases": {
+      "R009": { "clearUsername": true, "clearPassword": false, "username": "", "password": "anyPass!1", "expectInvalidField": "username" },
+      "R010": { "clearUsername": false, "clearPassword": true, "username": "someuser", "password": "", "expectInvalidField": "password" },
+      "R011": { "clearUsername": false, "clearPassword": false, "username": "wronguser_qa_9999", "password": "Sneha@123", "expectInvalidField": "message" },
+      "R012": { "clearUsername": false, "clearPassword": false, "username": "sbhatt", "password": "BadPass!123", "expectInvalidField": "message" },
+      "R013": { "clearUsername": false, "clearPassword": false, "username": "wronguser_qa_9999", "password": "BadPass!123", "expectInvalidField": "message" }
+    },
+    "successfulLoginCases": [
+      { "id": "R014", "submitVia": "click" },
+      { "id": "R015", "submitVia": "enter" }
+    ],
+    "footerLinkCases": [
+      { "id": "R006", "selectorKey": "supportLink", "hrefKey": "R006_supportLink" },
+      { "id": "R007", "selectorKey": "blogLink", "hrefKey": "R007_blogLink" },
+      { "id": "R008", "selectorKey": "websiteLink", "hrefKey": "R008_websiteLink" }
+    ],
+    "resetInvalidEmail": "nonexistent_qa_9999@example.invalid"
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
