@@ -312,6 +312,46 @@
       "deleteButton": "button#config-emailTemp-deleteUser-button"
     }
   },
+  "accessManagement": {
+    "path": "/user-management",
+    "titles": {
+      "landing": "Access Management \\| ThreatModeler",
+      "departments": "Department \\| ThreatModeler",
+      "users": "Users \\| ThreatModeler",
+      "groups": "Groups \\| ThreatModeler",
+      "roles": "Roles \\| ThreatModeler"
+    },
+    "tabs": {
+      "departments": "Departments",
+      "users": "Users",
+      "groups": "Groups",
+      "roles": "Roles & Permissions"
+    },
+    "selectors": {
+      "mainContainer": "#mainContainer",
+      "searchInput": "#inputSearchId",
+      "tabRole": "li[role=\"tab\"]",
+      "gridHeader": ".k-grid-header th",
+      "pageNumberButton": "main button[aria-label^=\"Page\"]",
+      "users": {
+        "departmentFilter": "#users-departmentfilter-dropdown",
+        "statusFilter": "#users-statusfilter-dropdown"
+      },
+      "groups": {
+        "searchInput": "#groups-search-input",
+        "departmentFilter": "#groups-departmentfilter-dropdown",
+        "groupRowTemplate": "[id^=\"groups-groupdetail\"]"
+      },
+      "roles": {
+        "typeFilter": "#roles-typefilter-dropdown"
+      }
+    },
+    "expected": {
+      "departmentsColumns": ["Name", "Users", "Groups", "Licenses used"],
+      "usersColumns": ["Name", "Status", "Email", "Department", "Group"],
+      "groupsColumns": ["Name", "Department", "Users"]
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
