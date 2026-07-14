@@ -214,6 +214,104 @@
       "wingmanGreetingContains": "Hey,"
     }
   },
+  "configuration": {
+    "path": "/configurations",
+    "titlePattern": "Configurations \\| ThreatModeler",
+    "tabs": {
+      "authentication": "#config-authentication-tab",
+      "smtp": "#config-smtp-tab",
+      "integrations": "#config-integrations-tab",
+      "llmFeaturesDefaults": "#config-llm-features-defaults-tab",
+      "threatModelDefaults": "#config-diagramdefaults-tab",
+      "userManagement": "#config-userManagement-tab",
+      "riskCalculation": "#config-riskCalculation-tab",
+      "compliance": "#config-complianceSection-tab",
+      "wingman": "#config-wingman-tab",
+      "notifications": "#config-notifications-tab",
+      "emailTemplates": "#config-emailTemplates-tab",
+      "customFields": "#config-custom-fields-tab",
+      "platformUsageReport": "#config-platformUsageReport-tab",
+      "status": "#config-status-tab",
+      "updates": "#config-updates-tab"
+    },
+    "sections": {
+      "authentication": "#section-authentication",
+      "smtp": "#section-smtp",
+      "integrations": "#section-integrations",
+      "llmFeaturesDefaults": "#section-llm-features-defaults",
+      "threatModelDefaults": "#section-diagramdefaults",
+      "userManagement": "#section-user-management",
+      "riskCalculation": "#section-risk-calculation",
+      "compliance": "#section-compliance-section",
+      "wingman": "#section-wingman",
+      "notifications": "#section-notifications",
+      "emailTemplates": "#section-email-templates",
+      "customFields": "#section-custom-fields",
+      "platformUsageReport": "#section-platform-usage-report",
+      "status": "#section-status-config",
+      "updates": "#section-updates"
+    },
+    "tmDefaults": {
+      "sectionHeading": "Threat Model Defaults",
+      "saveButton": "button#tmDefaults-submit-button",
+      "protocolDropdown": "#tmDefaults-protocol-list",
+      "cvssVersionDropdown": "#tmDefaults-cvss-version-list",
+      "addAttackerToggle": "tm-kendo-switch#tmDefaults-addAttacker-toggle",
+      "enableComplianceToggle": "tm-kendo-switch#tmDefaults-enableCompliance-toggle",
+      "statusChangeToggle": "tm-kendo-switch#tmDefaults-statusChange-toggle",
+      "riskChangeToggle": "tm-kendo-switch#tmDefaults-riskChange-toggle"
+    },
+    "wingman": {
+      "sectionHeading": "AI",
+      "saveButton": "button#config-copilot-save-button",
+      "infoTooltip": "#wingman-config-info-tooltip",
+      "toggles": [
+        "tm-kendo-switch#config-copilot-showCopilot-toggle",
+        "tm-kendo-switch#config-copilot-AIIntegration-toggle",
+        "tm-kendo-switch#config-copilot-TMCreation-toggle",
+        "tm-kendo-switch#config-copilot-wingman-insights-toggle",
+        "tm-kendo-switch#config-copilot-threat-model-search-toggle",
+        "tm-kendo-switch#config-copilot-widget-creation-toggle",
+        "tm-kendo-switch#config-copilot-component-search-toggle",
+        "tm-kendo-switch#config-copilot-diagarmSuggestion-toggle",
+        "tm-kendo-switch#config-copilot-existingTMSuggestion-toggle"
+      ]
+    },
+    "notifications": {
+      "saveButton": "button#config-notification-save-button",
+      "accordionHeaderTemplate": "#accordion-header-{i}",
+      "expectedAccordionCount": 4
+    },
+    "integrations": {
+      "newIntegrationButton": "button#config-integrations-newIntegration-button",
+      "filterMultiselect": "#multiselect-integration-filter",
+      "searchInput": "#config-integrations-search-input",
+      "groupHeaderTemplate": "#integration-group-header-{i}",
+      "actionsButtonTemplate": "#integration-third-party-{i}",
+      "editButtonTemplate": "#edit-integration-{i}",
+      "deleteButtonTemplate": "#delete-integration-{i}"
+    },
+    "llmFeaturesDefaults": {
+      "featureDropdowns": [
+        "#integration-textToThreatModel",
+        "#integration-threatSRGeneration",
+        "#integration-threatModelSearch",
+        "#integration-widgetGeneration",
+        "#integration-summariesAndPrioritization",
+        "#integration-importToThreatModel",
+        "#integration-embeddings"
+      ]
+    },
+    "updates": {
+      "updateContentButton": "button#updateContent-button"
+    },
+    "emailTemplates": {
+      "searchInput": "#config-emailTemp-search-input",
+      "createButton": "button#config-emailTemp-create-button",
+      "editButton": "button#config-emailTemp-editUser-button",
+      "deleteButton": "button#config-emailTemp-deleteUser-button"
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
