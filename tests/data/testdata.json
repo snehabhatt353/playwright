@@ -352,6 +352,60 @@
       "groupsColumns": ["Name", "Department", "Users"]
     }
   },
+  "customReport": {
+    "panelTitle": "Custom Report",
+    "emptyStateText": "No reports generated yet",
+    "dialogTitle": "Create Custom Report",
+    "generateReportButton": "#topMenuTour_5",
+    "reportKindButtonAria": "Custom Report",
+    "diagramLinkSelector": "a[href*=\"threatmodeldiagram\"]",
+    "selectors": {
+      "generateNewButton": "button[aria-label=\"Generate New\"]",
+      "reportNameInput": "#createReport-reportName-input input",
+      "visibilityDropdown": "#createReport-permissions-dropdown",
+      "saveReportButton": "button#createReport-saveReport-button",
+      "saveAndDownloadButton": "button#createReport-saveAndDownloadReport-button",
+      "includeCheckboxes": {
+        "overview": "#createReport-includeInReportoverview-checkbox",
+        "executiveSummary": "#createReport-includeInReportoexecutiveSummary-checkbox",
+        "threats": "#createReport-includeInReportthreats-checkbox",
+        "securityRequirements": "#createReport-includeInReportsecurityRequirements-checkbox",
+        "testCases": "#createReport-includeInReporttestCases-checkbox"
+      },
+      "overviewSubs": [
+        "#createReport-overviewdiagram-checkbox",
+        "#createReport-overviewtracebility-matrix-checkbox",
+        "#createReport-overviewtop-ten-threats-checkbox",
+        "#createReport-overviewapproval-workflow-checkbox"
+      ],
+      "threatsSubs": [
+        "#createReport-threatsdescription-checkbox",
+        "#createReport-threatsrelated-security-requirements-checkbox",
+        "#createReport-threatssecurityControl-checkbox",
+        "#createReport-threatscve-checkbox",
+        "#createReport-threatsnotes-checkbox",
+        "#createReport-threatstest-cases-checkbox",
+        "#createReport-threatsisTags-checkbox",
+        "#createReport-threatsIsCustomField-checkbox",
+        "#createReport-filterThreatTag-checkbox"
+      ],
+      "srSubs": [
+        "#createReport-securityRequirementsdetailsdescription-checkbox",
+        "#createReport-securityRequirementsdetailssecurityControl-checkbox",
+        "#createReport-securityRequirementsdetailsnotes-checkbox",
+        "#createReport-securityRequirementsdetailsisTags-checkbox",
+        "#createReport-srIsCustomField-checkbox",
+        "#createReport-filterSRTag-checkbox"
+      ],
+      "testCasesSubs": [
+        "#createReport-testCasesdescription-checkbox"
+      ]
+    },
+    "sectionTabs": ["Overview", "Executive Summary", "Threats", "Security Requirements", "Test Cases", "Components", "Compliance Summary"],
+    "visibilityOptions": ["Only me", "Department", "Organization"],
+    "modalSelector": "ngb-modal-window[role=\"dialog\"]",
+    "closeButtonId": "#createReport-close-button"
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
