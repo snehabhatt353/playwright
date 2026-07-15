@@ -406,6 +406,34 @@
     "modalSelector": "ngb-modal-window[role=\"dialog\"]",
     "closeButtonId": "#createReport-close-button"
   },
+  "ruleEngine": {
+    "path": "/rules-engine",
+    "titlePattern": "Rules Engine \\| ThreatModeler",
+    "sideNavAriaLabel": "Rules Engine",
+    "selectors": {
+      "sideNavLink": "a[aria-label=\"Rules Engine\"]",
+      "reportCount": "#reportCount",
+      "searchInput": "#ruleConfig-search input",
+      "contextFilter": "#ruleConfig-context-options",
+      "statusFilter": "#ruleConfig-status-options",
+      "sortByFilter": "#ruleConfig-sortby-options",
+      "actionMenuTemplate": "#ruleConfig-action-menu",
+      "createFormSection": "#rule-details",
+      "ruleNameInput": "#ruleConfig-name-input input",
+      "contextCombobox": "#ruleConfig-context",
+      "triggerCombobox": "#ruleConfig-trigger-input",
+      "addConditionButton": "button#ruleConfig-addCondition-button",
+      "addActionButton": "button#ruleConfig-addAction-button",
+      "cancelButton": "button#ruleConfig-reset-button",
+      "saveButton": "button#ruleConfig-Save-button",
+      "saveAndActivateButton": "button#ruleConfig-save-and-activate-button"
+    },
+    "labels": {
+      "pageHeading": "Rules Engine",
+      "createFormHeading": "Create New Rule",
+      "myRulesHeading": "My Rules"
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
