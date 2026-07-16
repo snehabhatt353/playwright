@@ -434,6 +434,31 @@
       "myRulesHeading": "My Rules"
     }
   },
+  "auditReport": {
+    "panelTitle": "Audit Report",
+    "dialogTitle": "Generate Audit Report",
+    "reportKindButtonAria": "Audit Report",
+    "diagramLinkSelector": "a[href*=\"threatmodeldiagram\"]",
+    "modalSelector": "ngb-modal-window",
+    "selectors": {
+      "generateNewButton": "button[aria-label=\"Generate New\"]",
+      "closeButtonId": "#reportSelectPopup-close-button",
+      "versionDropdown": "#reportSelectPopup-selectVersion-dropdown",
+      "timeFrameDropdown": "#reportSelectPopup-timeFrame-dropdown",
+      "actionDropdown": "#reportSelectPopup-action-dropdown",
+      "userActivityCheckbox": "input[id=\"Include user activity summary\"]",
+      "metricsMultiselect": "kendo-multiselect#reportSelectPopup-metrics-dropdown",
+      "transactionsMultiselect": "kendo-multiselect#multiselectId",
+      "pdfFormatRadio": "#reportExportFile-pdf-input",
+      "csvFormatRadio": "#reportExportFile-csv-input",
+      "cancelButton": "button#reportAuditPopup-cancel-button",
+      "generateButton": "button#reportAuditPopup-generateReport-button"
+    },
+    "expected": {
+      "timeFrameDefault": "Last 30 Days",
+      "actionDefault": "All"
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
