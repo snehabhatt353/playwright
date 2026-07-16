@@ -479,6 +479,23 @@
       "toggleLabel": "Toggle Custom Risk Calculation"
     }
   },
+  "cisoReport": {
+    "panelTitle": "CISO Report",
+    "reportKindButtonAria": "CISO Report",
+    "diagramLinkSelector": "a[href*=\"threatmodeldiagram\"]",
+    "panelContainerClass": ".report-history-popup",
+    "selectors": {
+      "generateNewButton": "button[aria-label=\"Generate New\"]",
+      "readyToDownloadToggle": "[aria-label=\"Toggle Ready to Download section\"]",
+      "reportCount": "#reportCount",
+      "pdfDownloadSpan": "span:has-text(\"PDF\")",
+      "htmlDownloadSpan": "span:has-text(\"HTML\")"
+    },
+    "labels": {
+      "readyToDownloadHeader": "Ready to Download",
+      "emptyStateText": "No reports generated yet"
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
