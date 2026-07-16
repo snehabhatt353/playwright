@@ -459,6 +459,26 @@
       "actionDefault": "All"
     }
   },
+  "customRiskCalculation": {
+    "configPath": "/configurations",
+    "titlePattern": "Configurations \\| ThreatModeler",
+    "sectionSelector": "#section-risk-calculation",
+    "sectionHeading": "Custom Risk Calculation",
+    "selectors": {
+      "saveButton": "button#config-riskCalculation-save-button",
+      "enableToggle": "kendo-switch#config-riskCalculation-enableRisk-switch",
+      "authenticatedRange": "#config-riskCalculation-authenticated-range",
+      "applicationRange": "#config-riskCalculation-application-range",
+      "highValueRange": "#config-riskCalculation-highValue-range"
+    },
+    "labels": {
+      "authenticated": ["Is Authenticated", "Is not Authenticated"],
+      "application": ["Application is Internal", "Application is External"],
+      "highValue": ["Is not a High Value Target", "Is a High Value Target"],
+      "categories": ["Likelihood", "Impact"],
+      "toggleLabel": "Toggle Custom Risk Calculation"
+    }
+  },
   "threatModelsScreen": {
     "expectedColumns": ["Name", "Version", "Risk", "Status", "Author", "Modified"],
     "leftNavLabels": {
