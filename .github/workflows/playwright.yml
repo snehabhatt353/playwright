@@ -1,8 +1,6 @@
 name: Playwright E2E
 
 on:
-  push:
-    branches: [main]
   workflow_dispatch:
     inputs:
       grep:
